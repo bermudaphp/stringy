@@ -1,0 +1,13 @@
+{
+    "name": "lobster-php/stringy",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Lobster\\Stringy\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">= 7.2.0",
+        "lobster-php/iterators": "^1.0"
+    }
+}
