@@ -20,22 +20,19 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @var string
      */
-    private string $string;
+    private $string;
 
     /**
      * @var string
      */
-    private string $encoding;
-
-    public const TRIM_LEFT = 1;
-    public const TRIM_RIGHT = 2;
+    private $encoding;
 
     /**
      * @param string $string
      * @param string|null $encoding
      * @return static
      */
-    public static function create(string $string = '', string $encoding = null) : self {
+    public static function new(string $string = '', string $encoding = null) : self {
         return new static($string, $encoding);
     }
 
@@ -53,7 +50,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return string
      */
     public function __toString() : string {
-        return $this->toString();
+        return $this->string;
     }
 
     /**
@@ -94,12 +91,12 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      */
     public function encode(string $encoding) : self {
 
-        if(($encoding = stringy($encoding))->equals('UTF-8', true)){
-            return static::create(Encoding::toUTF8($this->string), $encoding);
+        if(($encoding = static::new($encoding))->equals('UTF-8', true)){
+            return static::new(Encoding::toUTF8($this->string), $encoding);
         }
 
         if($encoding->equalsAny(['ISO-8859-1', 'Windows-1251'], true)){
-            return static::create(Encoding::toWin1252($this->string), 'ISO-8859-1');
+            return static::new(Encoding::toWin1252($this->string), 'ISO-8859-1');
         }
 
         if(!$encoding->equalsAny(mb_list_encodings())){
@@ -108,7 +105,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
             );
         }
 
-        return stringy(mb_convert_encoding($this->string, $encoding, $this->encoding), $encoding);
+        return static::new(mb_convert_encoding($this->string, $encoding, $this->encoding), $encoding);
     }
 
     /**
@@ -138,14 +135,14 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy[]
      */
     public function explode(string $delim = '/') : array {
-        return array_map(function ($string){return static::create($string, $this->encoding);}, explode($delim, $this->string));
+        return array_map(function ($string){return static::new($string, $this->encoding);}, explode($delim, $this->string));
     }
 
     /**
      * @return Stringy
      */
     public function ucFirst() : self {
-        return static::create(ucfirst($this->string), $this->encoding);
+        return static::new(ucfirst($this->string), $this->encoding);
     }
 
     /**
@@ -223,7 +220,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return static
      */
     public function hash(string $algorithm = 'sha512') : self {
-        return static::create(hash($algorithm, $this->string), $this->encoding);
+        return static::new(hash($algorithm, $this->string), $this->encoding);
     }
 
     /**
@@ -231,7 +228,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function trim(string $charlist = ' ') : self {
-        return static::create(trim($this->string, $charlist));
+        return static::new(trim($this->string, $charlist));
     }
 
     /**
@@ -239,7 +236,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function ltrim(string $charlist = ' ') : self {
-        return static::create(ltrim($this->string, $charlist));
+        return static::new(ltrim($this->string, $charlist));
     }
 
     /**
@@ -247,7 +244,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function rtrim(string $charlist = ' ') : self {
-        return static::create(rtrim($this->string, $charlist));
+        return static::new(rtrim($this->string, $charlist));
     }
 
 
@@ -257,7 +254,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function replace($search, $replace) : self {
-        return static::create(str_replace($search, $replace, $this), $this->encoding);
+        return static::new(str_replace($search, $replace, $this), $this->encoding);
     }
 
 
@@ -266,7 +263,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function prepend(string $subject) : self {
-        return static::create($subject . $this->string);
+        return static::new($subject . $this->string);
     }
 
     /**
@@ -274,7 +271,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function append(string $subject) : self {
-        return static::create($this->string . $subject);
+        return static::new($this->string . $subject);
     }
 
     /**
@@ -325,7 +322,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
             throw new \Exception('Invalid offset.');
         }
 
-        return static::create($this->string[$index]);
+        return static::new($this->string[$index]);
     }
 
     /**
@@ -339,7 +336,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
             $string .= $this->string[$start];
         }
 
-        return static::create($string);
+        return static::new($string);
     }
 
     /**
@@ -377,7 +374,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return bool
      */
     public function isWrapped(string $char) : bool {
-        return ($char = static::create($char))->first()
+        return ($char = static::new($char))->first()
                 ->equals($char) && $char->last()->equals($char);
     }
 
@@ -398,7 +395,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function substring(int $pos, int $length = null) : self {
-        return static::create(mb_substr($this->string, $pos, $length), $this->encoding);
+        return static::new(mb_substr($this->string, $pos, $length), $this->encoding);
     }
 
     /**
@@ -425,7 +422,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null) : self {
-        return static::create(preg_replace($pattern, $replacement, $this->string, $limit, $count));
+        return static::new(preg_replace($pattern, $replacement, $this->string, $limit, $count));
     }
 
     /**
@@ -438,8 +435,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0) : bool {
         $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
 
-        if(error_get_last()){
-            RegexpException::fromLastError();
+        if($error = error_get_last()){
+            throw new \Exception($error['message']);
         }
 
         return $match ;
@@ -460,14 +457,14 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return Stringy
      */
     public function revers() : self {
-        return static::create(strrev($this->string));
+        return static::new(strrev($this->string));
     }
 
     /**
      * @return Stringy
      */
     public function lcFirst() : self {
-        return static::create(lcfirst($this->string));
+        return static::new(lcfirst($this->string));
     }
 
     /**
@@ -482,7 +479,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
             $str .= $this->index(random_int(0, $this->lastIndex()));
         }
 
-        return static::create($str);
+        return static::new($str);
     }
 
     /**
@@ -529,7 +526,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
             return  $left > $right ? 1 : -1 ;
         });
 
-        return static::create(implode('', $chars));
+        return static::new(implode('', $chars));
 
     }
 
@@ -537,14 +534,14 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return static
      */
     public function toUpper() : self {
-        return static::create(strtoupper($this->string));
+        return static::new(strtoupper($this->string));
     }
 
     /**
      * @return static
      */
     public function toLower() : self {
-        return static::create(strtolower($this->string));
+        return static::new(strtolower($this->string));
     }
 
     /**
@@ -554,7 +551,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     public function split(int $length = 1) : array {
 
         if($length < 1){
-            throw new InvalidArgumentException(
+            throw new \LogicException(
                 'Argument [length] must be larger by zero.'
             );
         }
@@ -571,17 +568,19 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @param mixed ...$args
      * @return static
-     * @throws ErrorException
+     * @throws \Exception
      */
     public function format(...$args) : self {
 
         $subject = @sprintf($this->string, ...$args);
 
         if($subject === false){
-            ErrorException::fromLastError();
+            throw new \Exception(
+                error_get_last()['message']
+            );
         }
 
-        return static::create($subject);
+        return static::new($subject);
     }
 
     /**
