@@ -8,6 +8,7 @@ use Traversable;
 use ForceUTF8\Encoding;
 use Lobster\Reducible\Arrayble;
 use Lobster\Reducible\Jsonable;
+use Lobster\Iterators\StringIterator;
 
 
 /**
@@ -56,13 +57,6 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     }
 
     /**
-     * @return string
-     */
-    public function toString() : string {
-        return $this->string;
-    }
-
-    /**
      * dump string and die
      */
     public function dd() : void {
@@ -84,7 +78,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @since 5.0.0
      */
     public function getIterator() : StringIterator {
-        return new StringIterator($this);
+        return new StringIterator((string) $this);
     }
 
     /**
