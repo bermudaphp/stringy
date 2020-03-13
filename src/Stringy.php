@@ -657,7 +657,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @since 5.0.0
      */
     public function offsetSet($offset, $value) {
-        throw new \Exception();
+        throw new \Exception('Object : Lobster\Stringy\Stringy is immutable.');
     }
 
     /**
@@ -670,6 +670,6 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @since 5.0.0
      */
     public function offsetUnset($offset) {
-        throw new \Exception('');
+        throw new \Exception('Object : Lobster\Stringy\Stringy is immutable.');
     }
 }
