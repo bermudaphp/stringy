@@ -4,14 +4,8 @@
 namespace Bermuda\String;
 
 
-use Traversable;
-use ForceUTF8\Encoding;
-use Bermuda\Enumerable\Arrayable;
-use Bermuda\Iterator\StringIterator;
-
-
 /**
- * Class StringInterface
+ * interface StringInterface
  * @package Bermuda\String
  */
 interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, Arrayable, Jsonable, Stringable
