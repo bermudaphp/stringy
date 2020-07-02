@@ -30,7 +30,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayable
      * @param string|null $encoding
      * @return static
      */
-    public static function new(string $string = '', string $encoding = null) : self
+    public static function new(string $string = '', string $encoding = null): self
     {
         return new static($string, $encoding);
     }
