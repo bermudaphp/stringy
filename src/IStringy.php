@@ -11,20 +11,11 @@ use Bermuda\Iterator\StringIterator;
 
 
 /**
- * Class Stringy
+ * Class IStringy
  * @package Bermuda\Stringy
  */
-class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayable, Jsonable
-{
-    private string $string;
-    private string $encoding;
-
-    public function __construct(string $string = '', string $encoding = null)
-    {
-        $this->string = $string;
-        $this->encoding = mb_strtoupper($encoding ?? mb_internal_encoding());
-    }
-    
+class IStringy extends Stringy
+{   
     /**
      * @param string $string
      * @param string|null $encoding
