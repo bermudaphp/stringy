@@ -46,7 +46,7 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayable
     /**
      * dump string and die
      */
-    public function dd() : void
+    public function dd(): void
     {
         dd($this->string);
     }
