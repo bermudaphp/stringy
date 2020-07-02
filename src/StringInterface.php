@@ -41,9 +41,9 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
 
     /**
      * @param string $delim
-     * @return StringInterface[]
+     * @return StringInterface[]|string[]
      */
-    public function explode(string $delim = '/'): array ;
+    public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array ;
 
     /**
      * @return StringInterface
