@@ -1,69 +1,61 @@
 <?php
 
 
-namespace Lobster\Stringy;
+namespace Bermuda\String;
 
 
 use Traversable;
 use ForceUTF8\Encoding;
-use Lobster\Reducible\Arrayble;
-use Lobster\Reducible\Jsonable;
-use Lobster\Iterators\StringIterator;
+use Bermuda\Enumerable\Arrayable;
+use Bermuda\Iterator\StringIterator;
 
 
 /**
  * Class Stringy
- * @package Lobster\Stringy
+ * @package Bermuda\Stringy
  */
-class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble, Jsonable {
+class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayable, Jsonable
+{
+    private string $string;
+    private string $encoding;
 
-    /**
-     * @var string
-     */
-    private $string;
-
-    /**
-     * @var string
-     */
-    private $encoding;
-
+    public function __construct(string $string = '', string $encoding = null)
+    {
+        $this->string = $string;
+        $this->encoding = mb_strtoupper($encoding ?? mb_internal_encoding());
+    }
+    
     /**
      * @param string $string
      * @param string|null $encoding
      * @return static
      */
-    public static function new(string $string = '', string $encoding = null) : self {
+    public static function new(string $string = '', string $encoding = null) : self
+    {
         return new static($string, $encoding);
-    }
-
-    /**
-     * Str constructor.
-     * @param string $string
-     * @param string|null $encoding
-     */
-    public function __construct(string $string = '', string $encoding = null) {
-        $this->string = $string;
-        $this->encoding = mb_strtoupper($encoding ?? mb_internal_encoding());
     }
 
     /**
      * @return string
      */
-    public function __toString() : string {
+    public function __toString(): string 
+    {
         return $this->string;
     }
 
     /**
      * dump string and die
      */
-    public function dd() : void {
+    public function dd() : void
+    {
         dd($this->string);
     }
 
     /**
      * @return array
      */
-    public function toArray(): array {
+    public function toArray(): array 
+    {
         return [$this];
     }
 
@@ -74,14 +66,16 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator() : StringIterator {
-        return new StringIterator((string) $this);
+    public function getIterator(): StringIterator
+    {
+        return new StringIterator($this->string);
     }
 
     /**
      * @return string
      */
-    public function encoding() : string {
+    public function encoding(): string 
+    {
         return $this->encoding;
     }
 
@@ -89,20 +83,21 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $encoding
      * @return Stringy
      */
-    public function encode(string $encoding) : self {
-
-        if(($encoding = static::new($encoding))->equals('UTF-8', true)){
+    public function encode(string $encoding): self
+    {
+        if(($encoding = static::new($encoding))->equals('UTF-8', true))
+        {
             return static::new(Encoding::toUTF8($this->string), $encoding);
         }
 
-        if($encoding->equalsAny(['ISO-8859-1', 'Windows-1251'], true)){
+        if($encoding->equalsAny(['ISO-8859-1', 'Windows-1251'], true))
+        {
             return static::new(Encoding::toWin1252($this->string), 'ISO-8859-1');
         }
 
-        if(!$encoding->equalsAny(mb_list_encodings())){
-            throw new \RuntimeException(
-                'Invalid encoding: ' . (string) $encoding
-            );
+        if(!$encoding->equalsAny(mb_list_encodings()))
+        {
+            throw new \RuntimeException('Invalid encoding: ' . (string) $encoding);
         }
 
         return static::new(mb_convert_encoding($this->string, $encoding, $this->encoding), $encoding);
@@ -114,9 +109,10 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return int|null
      */
-    public function indexOf(string $needle, int $offset = 0, bool $caseSensitive = false) :? int {
-
-        if((bool)$caseSensitive){
+    public function indexOf(string $needle, int $offset = 0, bool $caseSensitive = false):? int
+    {
+        if((bool)$caseSensitive)
+        {
             return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null ;
         }
 
@@ -126,7 +122,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @return Stringy
      */
-    public function copy() : self {
+    public function copy(): self 
+    {
         return clone $this;
     }
 
@@ -134,21 +131,27 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $delim
      * @return Stringy[]
      */
-    public function explode(string $delim = '/') : array {
-        return array_map(function ($string){return static::new($string, $this->encoding);}, explode($delim, $this->string));
+    public function explode(string $delim = '/'): array
+    {
+        return array_map(static function ($string)
+        {
+            return static::new($string, $this->encoding);
+        }, explode($delim, $this->string));
     }
 
     /**
      * @return Stringy
      */
-    public function ucFirst() : self {
+    public function ucFirst(): self
+    {
         return static::new(ucfirst($this->string), $this->encoding);
     }
 
     /**
      * @return int
      */
-    public function count(): int {
+    public function count(): int
+    {
         return $this->length();
     }
 
@@ -158,7 +161,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return bool
      */
-    public function contains(string $needle, int $offset = 0, bool $caseSensitive = false) : bool {
+    public function contains(string $needle, int $offset = 0, bool $caseSensitive = false): bool
+    {
        return $this->indexOf($needle, $offset, $caseSensitive) !== null;
     }
 
@@ -167,21 +171,24 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $substring
      * @return Stringy
      */
-    public function truncate(int $length = 200, string $substring = '...') : self {
+    public function truncate(int $length = 200, string $substring = '...'): self 
+    {
         return $this->start($length)->append($substring);
     }
 
     /**
      * @return int
      */
-    public function length() : int {
+    public function length(): int 
+    {
         return mb_strlen($this->string);
     }
 
     /**
      * @return int
      */
-    public function getBytes() : int {
+    public function getBytes(): int 
+    {
         return strlen($this->string);
     }
 
@@ -191,9 +198,10 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return Stringy|null
      */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseSensitive = false) :? self {
-
-        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null){
+    public function before(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? self 
+    {
+        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null)
+        {
             return $this->start($requireNeedle ? $index + 1 : $index);
         }
 
@@ -206,9 +214,10 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return Stringy|null
      */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseSensitive = false) :? self {
-
-        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null){
+    public function after(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? self
+    {
+        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null)
+        {
             return $this->substring($requireNeedle ? $index + 1 : $index);
         }
 
@@ -219,7 +228,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $algorithm
      * @return static
      */
-    public function hash(string $algorithm = 'sha512') : self {
+    public function hash(string $algorithm = 'sha512'): self 
+    {
         return static::new(hash($algorithm, $this->string), $this->encoding);
     }
 
@@ -227,7 +237,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $charlist
      * @return Stringy
      */
-    public function trim(string $charlist = ' ') : self {
+    public function trim(string $charlist = ' '): self
+    {
         return static::new(trim($this->string, $charlist));
     }
 
@@ -235,7 +246,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $charlist
      * @return Stringy
      */
-    public function ltrim(string $charlist = ' ') : self {
+    public function ltrim(string $charlist = ' '): self
+    {
         return static::new(ltrim($this->string, $charlist));
     }
 
@@ -243,17 +255,18 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $charlist
      * @return Stringy
      */
-    public function rtrim(string $charlist = ' ') : self {
+    public function rtrim(string $charlist = ' ') : self
+    {
         return static::new(rtrim($this->string, $charlist));
     }
-
 
     /**
      * @param string|array $search
      * @param string|array $replace
      * @return Stringy
      */
-    public function replace($search, $replace) : self {
+    public function replace($search, $replace): self
+    {
         return static::new(str_replace($search, $replace, $this), $this->encoding);
     }
 
@@ -262,7 +275,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $subject
      * @return Stringy
      */
-    public function prepend(string $subject) : self {
+    public function prepend(string $subject) : self
+    {
         return static::new($subject . $this->string);
     }
 
@@ -270,7 +284,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $subject
      * @return Stringy
      */
-    public function append(string $subject) : self {
+    public function append(string $subject) : self
+    {
         return static::new($this->string . $subject);
     }
 
@@ -279,9 +294,10 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return bool
      */
-    public function equals(string $subject, bool $caseSensitive = false) : bool {
-
-        if($caseSensitive){
+    public function equals(string $subject, bool $caseSensitive = false) : bool
+    {
+        if($caseSensitive)
+        {
             return strcasecmp($this->string, $subject) == 0 ;
         }
 
@@ -293,10 +309,12 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param bool $caseSensitive
      * @return bool
      */
-    public function equalsAny(array $subject, bool $caseSensitive = false) : bool {
-
-        foreach ($subject as $item){
-            if($this->equals((string) $item, $caseSensitive)){
+    public function equalsAny(array $subject, bool $caseSensitive = false): bool
+    {
+        foreach ($subject as $item)
+        {
+            if($this->equals((string) $item, $caseSensitive))
+            {
                 return true;
             }
         }
@@ -307,19 +325,21 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @return bool
      */
-    public function isEmpty() : bool {
+    public function isEmpty(): bool
+    {
         return empty($this->string);
     }
 
     /**
      * @param int $index
      * @return Stringy
-     * @throws \Exception
+     * @throws \RuntimeException
      */
-    public function index(int $index) : self {
-
-        if(!$this->has($index)){
-            throw new \Exception('Invalid offset.');
+    public function index(int $index) : self 
+    {
+        if(!$this->has($index))
+        {
+            throw new \RuntimeException('Invalid offset');
         }
 
         return static::new($this->string[$index]);
@@ -330,9 +350,10 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $end
      * @return Stringy
      */
-    public function interval(int $start, int $end) : self {
-
-        for ($string = ''; $start <= $end; $start++){
+    public function interval(int $start, int $end): self 
+    {
+        for ($string = ''; $start <= $end; $start++)
+        {
             $string .= $this->string[$start];
         }
 
@@ -343,21 +364,24 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $index
      * @return bool
      */
-    public function has(int $index) : bool {
+    public function has(int $index): bool 
+    {
         return abs($index) <= $this->lastIndex();
     }
 
     /**
      * @return Stringy|null
      */
-    public function first() :? self {
+    public function first():? self 
+    {
         return $this->index(0);
     }
 
     /**
      * @return Stringy|null
      */
-    public function last() :? self {
+    public function last():? self
+    {
         return $this->index($this->lastIndex());
     }
 
@@ -365,7 +389,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string $char
      * @return Stringy
      */
-    public function wrap(string $char) : self {
+    public function wrap(string $char): self
+    {
         return $this->prepend($char)->append($char);
     }
 
@@ -373,20 +398,19 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param string|null $char
      * @return bool
      */
-    public function isWrapped(string $char) : bool {
-        return ($char = static::new($char))->first()
-                ->equals($char) && $char->last()->equals($char);
+    public function isWrapped(string $char): bool
+    {
+        return ($char = static::new($char))->first()->equals($char) 
+            && $char->last()->equals($char);
     }
 
     /**
      * @param int $pos
      * @return self[]
      */
-    public function break(int $pos) : array {
-        return [
-            $this->start($pos),
-            $this->substring($pos),
-        ];
+    public function break(int $pos): array 
+    {
+        return [$this->start($pos), $this->substring($pos)];
     }
 
     /**
@@ -394,7 +418,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int|null $length
      * @return Stringy
      */
-    public function substring(int $pos, int $length = null) : self {
+    public function substring(int $pos, int $length = null): self
+    {
         return static::new(mb_substr($this->string, $pos, $length), $this->encoding);
     }
 
@@ -402,7 +427,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $length
      * @return Stringy
      */
-    public function start(int $length) : self {
+    public function start(int $length): self 
+    {
         return $this->substring(0, $length);
     }
 
@@ -410,8 +436,9 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $length
      * @return Stringy
      */
-    public function end(int $length) : self {
-        return $this->substring( - $length = abs($length), $length);
+    public function end(int $length): self 
+    {
+        return $this->substring(- $length = abs($length), $length);
     }
 
     /**
@@ -421,7 +448,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int|null $count
      * @return Stringy
      */
-    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null) : self {
+    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): self 
+    {
         return static::new(preg_replace($pattern, $replacement, $this->string, $limit, $count));
     }
 
@@ -432,14 +460,15 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $offset
      * @return bool
      */
-    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0) : bool {
+    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool 
+    {
         $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
 
         if($error = error_get_last()){
-            throw new \Exception($error['message']);
+            throw new \RuntimeException($error['message']);
         }
 
-        return $match ;
+        return $match;
     }
 
     /**
@@ -449,21 +478,24 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $offset
      * @return bool
      */
-    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0) : bool {
+    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool 
+    {
         return preg_match_all($pattern, $this->string, $matches, $flags, $offset) === 1;
     }
 
     /**
      * @return Stringy
      */
-    public function revers() : self {
+    public function revers() : self
+    {
         return static::new(strrev($this->string));
     }
 
     /**
      * @return Stringy
      */
-    public function lcFirst() : self {
+    public function lcFirst() : self
+    {
         return static::new(lcfirst($this->string));
     }
 
@@ -471,11 +503,12 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $len
      * @return Stringy
      */
-    public function rand(int $len) : self {
-
+    public function rand(int $len): self
+    {
         $str = '';
 
-        while ($len--){
+        while ($len--)
+        {
             $str .= $this->index(random_int(0, $this->lastIndex()));
         }
 
@@ -485,16 +518,18 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * Write string
      */
-    public function write() : void {
+    public function write(): void 
+    {
         echo $this->string;
     }
 
     /**
      * @return int
      */
-    public function lastIndex() :? int {
-
-        if(($count = $this->length()) === 0){
+    public function lastIndex():? int 
+    {
+        if(($count = $this->length()) === 0)
+        {
             return null ;
         }
 
@@ -504,22 +539,24 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @return int|null
      */
-    public function firstIndex() :? int {
+    public function firstIndex():? int 
+    {
         return $this->length() === 0 ? null : 0 ;
     }
 
     /**
      * @return static
      */
-    public function shuffle() : self {
-
+    public function shuffle(): self 
+    {
         $chars = $this->split();
 
-        usort($chars, function () : int {
-
+        usort($chars, static function (): int
+        {
             if(($left = random_int(0, 100))
                 == ($right = random_int(0, 100))
-            ){
+            )
+            {
                 return 0;
             }
 
@@ -527,20 +564,21 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
         });
 
         return static::new(implode('', $chars));
-
     }
 
     /**
      * @return static
      */
-    public function toUpper() : self {
+    public function toUpper() : self 
+    {
         return static::new(strtoupper($this->string));
     }
 
     /**
      * @return static
      */
-    public function toLower() : self {
+    public function toLower() : self 
+    {
         return static::new(strtolower($this->string));
     }
 
@@ -548,17 +586,17 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @param int $length
      * @return Stringy[]
      */
-    public function split(int $length = 1) : array {
-
-        if($length < 1){
-            throw new \LogicException(
-                'Argument [length] must be larger by zero.'
-            );
+    public function split(int $length = 1): array
+    {
+        if($length < 1)
+        {
+            throw new \LogicException('Argument [length] must be larger by zero');
         }
 
         $split = [];
 
-        for ($count = $this->count(); $count > 0 ; $count -= $length){
+        for ($count = $this->count(); $count > 0 ; $count -= $length)
+        {
             $split[] = $this->substring(-$count, $length);
         }
 
@@ -566,18 +604,17 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     }
 
     /**
-     * @param mixed ...$args
+     * @param mixed ... $args
      * @return static
-     * @throws \Exception
+     * @throws \RuntimeException
      */
-    public function format(...$args) : self {
+    public function format(... $args): self
+    {
+        $subject = @sprintf($this->string, ... $args);
 
-        $subject = @sprintf($this->string, ...$args);
-
-        if($subject === false){
-            throw new \Exception(
-                error_get_last()['message']
-            );
+        if($subject === false)
+        {
+            throw new \RuntimeException(error_get_last()['message']);
         }
 
         return static::new($subject);
@@ -586,24 +623,28 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
     /**
      * @return bool
      */
-    public function isJson() : bool {
-
-        try{
+    public function isJson(): bool
+    {
+        try
+        {
             json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable $e){
+        } 
+        
+        catch (\Throwable $e)
+        {
             return false;
         }
 
         return true;
-
     }
 
     /**
      * @param int $options
      * @return string
      */
-    public function toJson(int $options = 0): string {
-        return json_encode($this->string, $options | JSON_THROW_ON_ERROR);
+    public function toJson(int $options = 0): string 
+    {
+        return json_encode($this->string, $options|JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -618,7 +659,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 5.0.0
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset)
+    {
         return (int) $offset > 0 && (int) $offset <= $this->count();
     }
 
@@ -631,12 +673,11 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return mixed Can return all value types.
      * @since 5.0.0
      */
-    public function offsetGet($offset) : self {
-
-        if(is_string($offset) && mb_strpos($offset, ':') !== false){
-
+    public function offsetGet($offset) : self 
+    {
+        if(is_string($offset) && mb_strpos($offset, ':') !== false)
+        {
             list($start, $end) = explode(':', $offset, 2);
-
             return $this->interval((int) $start, (int) $end);
         }
 
@@ -655,8 +696,9 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return void
      * @since 5.0.0
      */
-    public function offsetSet($offset, $value) {
-        throw new \Exception('Object : Lobster\Stringy\Stringy is immutable.');
+    public function offsetSet($offset, $value)
+    {
+        throw new \RuntimeException('Object: Bermuda\String\Stringy is immutable');
     }
 
     /**
@@ -668,7 +710,8 @@ class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayble,
      * @return void
      * @since 5.0.0
      */
-    public function offsetUnset($offset) {
-        throw new \Exception('Object : Lobster\Stringy\Stringy is immutable.');
+    public function offsetUnset($offset)
+    {
+        throw new \RuntimeException('Object: Bermuda\String\Stringy is immutable');
     }
 }
