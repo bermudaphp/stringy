@@ -5,10 +5,10 @@ namespace Bermuda\String;
 
 
 /**
- * interface Stringable
+ * interface Jsonable
  * @package Bermuda\String
  */
-interface Stringable
+interface Jsonable
 {
     /**
      * @param int $options
