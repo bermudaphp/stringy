@@ -75,7 +75,7 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function encode(string $encoding): StringInterface
     {
-        if(($encoding = static::new($encoding))->equals('UTF-8', true))
+        if(($encoding = new self($encoding))->equals('UTF-8', true))
         {
             return new self(Encoding::toUTF8($this->string), $encoding);
         }
