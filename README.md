@@ -1,1 +1,4 @@
-# Stringy
+# Install
+```bash
+composer require bermudaphp/stringy
+````
