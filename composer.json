@@ -4,7 +4,9 @@
     "autoload": {
         "psr-4": {
             "Bermuda\\String\\": "src/"
-        }
+        },
+        "files": ["src\\functions.php"]
+    },
     },
     "require": {
         "php": ">= 7.2.0",
