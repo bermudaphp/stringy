@@ -99,7 +99,7 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
         ($copy = clone $this)->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
         $copy->encoding = $encoding;
         
-        return $encoding;
+        return $copy;
     }
 
     /**
@@ -140,7 +140,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function ucFirst(): StringInterface
     {
-        return new self(ucfirst($this->string), $this->encoding);
+        ($copy = clone $this)->string = ucfirst($this->string);
+        return $copy;
     }
 
     /**
@@ -343,7 +344,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             throw new \RuntimeException('Invalid offset');
         }
 
-        return new self($this->string[$index]);
+        ($copy = clone $this)->string = $this->string[$index];
+        return $copy;
     }
 
     /**
