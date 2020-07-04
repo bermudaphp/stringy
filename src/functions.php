@@ -15,12 +15,12 @@ function str_contains(string $haystack, string $needle, int $offset = 0, bool $c
 }
 
 /**
- * @param string $haystack
- * @return $needle
+ * @param string $string
+ * @return string
  */
-function str_shuffle(string $haystack): string
+function str_shuffle(string $string): string
 {
-    $chars = \str_split($haystack, 1);
+    $chars = \str_split($string, 1);
     
     \usort($chars, static function (): int
     {
@@ -88,41 +88,41 @@ public function equals_any(string $x, array $y, bool $case_sensitive = false): b
 
 /**
  * @param string $char
- * @param string $haystack
- * @return bool
+ * @param string $unwrapped
+ * @return string
  */
-public function str_wrap(string $char, string $haystack): string
+public function str_wrap(string $char, string $unwrapped): string
 {
-    return $char . $haystack . $char;
+    return $char . $unwrapped . $char;
 }
 
 /**
- * @param string $char
- * @param string $haystack
- * @return bool
+ * @param string $input
+ * @param int $length
+ * @return string
  */
-public function str_rand(string $haystack, int $length): string
+public function str_rand(string $input, int $length): string
 {
     $string = '';
-    $pos = \mb_strlen($haystack);
+    $pos = \mb_strlen($input);
     
     while($length--)
     {
-        $string .= $haystack[\random_int(0, $pos)]
+        $string .= $input[\random_int(0, $pos)]
     }
     
     return $string;
 }
 
 /**
- * @param string $haystack
+ * @param string $string
  * @param int $pos
  * @param int|null $length
  * @return string
  */
-public function substring(string $haystack, int $pos, int $length = null): string
+public function substring(string $string, int $pos, int $length = null): string
 {
-    return \mb_substr($haystack, $pos, $length);
+    return \mb_substr($string, $pos, $length);
 }
 
 /**
@@ -130,13 +130,13 @@ public function substring(string $haystack, int $pos, int $length = null): strin
  * @param int $end
  * @return string
  */
-function str_interval(string $haystack, int $start, int $end): string 
+function str_interval(string $input, int $start, int $end): string 
 {
     $string = '';
     
     for ($string = ''; $start <= $end; $start++)
     {
-        $string .= $haystack[$start];
+        $string .= $input[$start];
     }
 
     return $string;
