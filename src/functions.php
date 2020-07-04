@@ -16,6 +16,25 @@ function str_contains(string $haystack, string $needle, int $offset = 0, bool $c
 
 /**
  * @param string $string
+ * @return bool
+ */
+function is_json(string $string): bool
+{
+    try
+    {
+        json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
+    } 
+        
+    catch (\Throwable $e)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @param string $string
  * @return string
  */
 function str_shuffle(string $string): string
