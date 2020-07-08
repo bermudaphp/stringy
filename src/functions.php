@@ -113,7 +113,7 @@ function str_equals(string $left, string $right, bool $case_sensitive = false): 
  * @param bool $case_sensitive
  * @return bool
  */
-public function equals_any(string $x, array $y, bool $case_sensitive = false): bool
+public function str_equals_any(string $x, array $y, bool $case_sensitive = false): bool
 {
     foreach ($y as $string)
     {
