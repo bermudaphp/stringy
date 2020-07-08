@@ -16,6 +16,27 @@ function str_contains(string $haystack, string $needle, int $offset = 0, bool $c
 
 /**
  * @param string $string
+ * @return string
+ */
+function to_camel_case(string $string): string 
+{
+        $replaced = '';
+
+        foreach (explode('_', $string) as $i => $segment)
+        {
+            if ($i > 0)
+            {
+                $segment = ucfirst($segment);
+            }
+
+            $replaced .= $segment;
+        }
+
+        return $replaced;
+    }
+
+/**
+ * @param string $string
  * @return bool
  */
 function is_json(string $string): bool
