@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bermuda\String;
+namespace Bermuda;
 
 
 /**
