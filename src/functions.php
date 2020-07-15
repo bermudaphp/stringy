@@ -18,7 +18,7 @@ function str_contains(string $haystack, string $needle, int $offset = 0, bool $c
  * @param string $string
  * @return string
  */
-function to_camel_case(string $string): string 
+function str_camel_case(string $string): string 
 {
         $replaced = '';
 
