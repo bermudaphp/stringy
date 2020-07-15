@@ -43,7 +43,7 @@ function is_json(string $string): bool
 {
     try
     {
-        json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
+        json_decode($string, true, 512, JSON_THROW_ON_ERROR);
     } 
         
     catch (\Throwable $e)
@@ -103,7 +103,7 @@ function str_equals(string $left, string $right, bool $case_sensitive = false): 
     {
         return \strcasecmp($left, $right) == 0 ;
     }
-
+    
     return \strcmp($left, $right) == 0 ;
 }
 
@@ -113,7 +113,7 @@ function str_equals(string $left, string $right, bool $case_sensitive = false): 
  * @param bool $case_sensitive
  * @return bool
  */
-public function str_equals_any(string $x, array $y, bool $case_sensitive = false): bool
+function str_equals_any(string $x, array $y, bool $case_sensitive = false): bool
 {
     foreach ($y as $string)
     {
@@ -131,7 +131,7 @@ public function str_equals_any(string $x, array $y, bool $case_sensitive = false
  * @param string $unwrapped
  * @return string
  */
-public function str_wrap(string $char, string $unwrapped): string
+function str_wrap(string $char, string $unwrapped): string
 {
     return $char . $unwrapped . $char;
 }
@@ -141,14 +141,14 @@ public function str_wrap(string $char, string $unwrapped): string
  * @param int $length
  * @return string
  */
-public function str_rand(string $input, int $length): string
+function str_rand(string $input, int $length): string
 {
     $string = '';
     $pos = \mb_strlen($input);
     
     while($length--)
     {
-        $string .= $input[\random_int(0, $pos)]
+        $string .= $input[\random_int(0, $pos)];
     }
     
     return $string;
@@ -160,7 +160,7 @@ public function str_rand(string $input, int $length): string
  * @param int|null $length
  * @return string
  */
-public function substring(string $string, int $pos, int $length = null): string
+function substring(string $string, int $pos, int $length = null): string
 {
     return \mb_substr($string, $pos, $length);
 }
