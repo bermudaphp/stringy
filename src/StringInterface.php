@@ -32,10 +32,10 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
     /**
      * @param string $needle
      * @param int $offset
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return int|null
      */
-    public function indexOf(string $needle, int $offset = 0, bool $caseSensitive = false):? int ;
+    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false):? int ;
     
     /**
      * @return StringInterface
