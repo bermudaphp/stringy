@@ -56,10 +56,10 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
     /**
      * @param string $needle
      * @param int $offset
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function contains(string $needle, int $offset = 0, bool $caseSensitive = false): bool
+    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool
 
     /**
      * @param int $length
@@ -81,18 +81,18 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
     /**
      * @param string $needle
      * @param bool $requireNeedle
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return StringInterface|null
      */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? StringInterface ; 
+    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface ; 
 
     /**
      * @param string $needle
      * @param bool $requireNeedle
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return StringInterface|null
      */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? StringInterface ;
+    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface ;
 
     /**
      * @param string $algorithm
@@ -139,17 +139,17 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
 
     /**
      * @param string $subject
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function equals(string $subject, bool $caseSensitive = false): bool ;
+    public function equals(string $subject, bool $caseInsensitive = false): bool ;
 
     /**
      * @param string[] $subject
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function equalsAny(array $subject, bool $caseSensitive = false): bool ;
+    public function equalsAny(array $subject, bool $caseInsensitive = false): bool ;
 
     /**
      * @return bool
@@ -169,14 +169,6 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @return StringInterface
      */
     public function interval(int $start, int $end): StringInterface ; 
-    {
-        for ($string = ''; $start <= $end; $start++)
-        {
-            $string .= $this->string[$start];
-        }
-
-        return static::new($string);
-    }
 
     /**
      * @param int $index
@@ -217,10 +209,7 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @param int|null $length
      * @return StringInterface
      */
-    public function substring(int $pos, int $length = null): StringInterface
-    {
-        return static::new(mb_substr($this->string, $pos, $length), $this->encoding);
-    }
+    public function substring(int $pos, int $length = null): StringInterface ;
 
     /**
      * @param int $length
