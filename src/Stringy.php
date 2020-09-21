@@ -77,7 +77,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     {
         if(str_equals($encoding, 'UTF-8', true))
         {
-            ($copy = clone $this)->string = Encoding::toUTF8($this->string);
+            $copy = clone $this;
+            $copy->string = Encoding::toUTF8($this->string);
             $copy->encoding = 'UTF-8';
             
             return $copy;
@@ -85,7 +86,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
 
         if(str_equals_any($encoding, ['ISO-8859-1', 'Windows-1251'], true))
         {
-            ($copy = clone $this)->string = Encoding::toWin1252($this->string);
+            $copy = clone $this;
+            $copy->string = Encoding::toWin1252($this->string);
             $copy->encoding = 'ISO-8859-1';
             
             return $copy;
@@ -96,7 +98,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             throw new \RuntimeException('Invalid encoding: ' . $encoding);
         }
         
-        ($copy = clone $this)->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
+        $copy = clone $this;
+        $copy->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
         $copy->encoding = $encoding;
         
         return $copy;
@@ -105,12 +108,12 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     /**
      * @param string $needle
      * @param int $offset
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return int|null
      */
-    public function indexOf(string $needle, int $offset = 0, bool $caseSensitive = false):? int
+    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false):? int
     {
-        if((bool) $caseSensitive)
+        if ($caseInsensitive)
         {
             return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null ;
         }
@@ -124,7 +127,7 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array
     {
-        if($asString)
+        if ($asString)
         {
             return explode($delim, $this->string, $limit);
         }
@@ -140,7 +143,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function ucFirst(): StringInterface
     {
-        ($copy = clone $this)->string = ucfirst($this->string);
+        $copy = clone $this;
+        $copy->string = ucfirst($this->string);
+
         return $copy;
     }
 
@@ -155,12 +160,12 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     /**
      * @param string $needle
      * @param int $offset
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function contains(string $needle, int $offset = 0, bool $caseSensitive = false): bool
+    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool
     {
-       return $this->indexOf($needle, $offset, $caseSensitive) !== null;
+       return $this->indexOf($needle, $offset, $caseInsensitive) !== null;
     }
 
     /**
@@ -192,12 +197,12 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     /**
      * @param string $needle
      * @param bool $requireNeedle
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return StringInterface|null
      */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? StringInterface 
+    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
     {
-        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null)
+        if(($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
         {
             return $this->start($requireNeedle ? $index + 1 : $index);
         }
@@ -208,12 +213,12 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     /**
      * @param string $needle
      * @param bool $requireNeedle
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return Stringy|null
      */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseSensitive = false):? StringInterface
+    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
     {
-        if(($index = $this->indexOf($needle, 0, $caseSensitive)) !== null)
+        if(($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
         {
             return $this->substring($requireNeedle ? $index + 1 : $index);
         }
@@ -236,7 +241,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function trim(string $charlist = ' '): StringInterface
     {
-        ($copy = clone $this)->string = trim($this->string, $charlist);
+        $copy = clone $this;
+        $copy->string = trim($this->string, $charlist);
+
         return $copy;
     }
 
@@ -246,7 +253,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function ltrim(string $charlist = ' '): StringInterface
     {
-        ($copy = clone $this)->string = ltrim($this->string, $charlist);
+        $copy = clone $this;
+        $copy->string = ltrim($this->string, $charlist);
+
         return $copy;
     }
 
@@ -256,7 +265,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function rtrim(string $charlist = ' '): StringInterface
     {
-        ($copy = clone $this)->string = rtrim($this->string, $charlist);
+        $copy = clone $this;
+        $copy->string = rtrim($this->string, $charlist);
+
         return $copy;
     }
 
@@ -267,7 +278,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function replace($search, $replace): StringInterface
     {
-        ($copy = clone $this)->string = str_replace($search, $replace, $this);
+        $copy = clone $this;
+        $copy->string = str_replace($search, $replace, $this);
+
         return $copy;
     }
 
@@ -277,7 +290,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function prepend(string $string): StringInterface
     {
-        ($copy = clone $this)->string = $string . $this->string;
+        $copy = clone $this;
+        $copy->string = $string . $this->string;
+
         return $copy;
     }
 
@@ -287,18 +302,20 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function append(string $string): StringInterface
     {
-        ($copy = clone $this)->string .= $string;
+        $copy = clone $this;
+        $copy->string .= $string;
+
         return $copy;
     }
 
     /**
      * @param string $subject
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function equals(string $subject, bool $caseSensitive = false): bool
+    public function equals(string $subject, bool $caseInsensitive = false): bool
     {
-        if($caseSensitive)
+        if ($caseInsensitive)
         {
             return strcasecmp($this->string, $subject) == 0 ;
         }
@@ -308,14 +325,14 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
 
     /**
      * @param string[] $subject
-     * @param bool $caseSensitive
+     * @param bool $caseInsensitive
      * @return bool
      */
-    public function equalsAny(array $subject, bool $caseSensitive = false): bool
+    public function equalsAny(array $subject, bool $caseInsensitive = false): bool
     {
         foreach ($subject as $item)
         {
-            if($this->equals((string) $item, $caseSensitive))
+            if ($this->equals((string) $item, $caseInsensitive))
             {
                 return true;
             }
@@ -344,7 +361,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             throw new \RuntimeException('Invalid offset');
         }
 
-        ($copy = clone $this)->string = $this->string[$index];
+        $copy = clone $this;
+        $copy->string = $this->string[$index];
+
         return $copy;
     }
 
@@ -360,7 +379,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             $string .= $this->string[$start];
         }
 
-        ($copy = clone $this)->string = $string;
+        $copy = clone $this;
+        $copy->string = $string;
+
         return $copy;
     }
 
@@ -424,7 +445,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function substring(int $pos, int $length = null): StringInterface
     {
-        ($copy = clone $this)->string = mb_substr($this->string, $pos, $length);
+        $copy = clone $this;
+        $copy->string = mb_substr($this->string, $pos, $length);
+
         return $copy;
     }
 
@@ -455,7 +478,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): StringInterface 
     {
-        ($copy = clone $this)->string = preg_replace($pattern, $replacement, $this->string, $limit, $count);
+        $copy = clone $this;
+        $copy->string = preg_replace($pattern, $replacement, $this->string, $limit, $count);
+
         return $copy;
     }
 
@@ -470,7 +495,8 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
     {
         $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
 
-        if($error = error_get_last()){
+        if ($error = error_get_last())
+        {
             throw new \RuntimeException($error['message']);
         }
 
@@ -494,7 +520,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function revers(): StringInterface
     {
-        ($copy = clone $this)->string = strrev($this->string);
+        $copy = clone $this;
+        $copy->string = strrev($this->string);
+        
         return $copy;
     }
 
@@ -503,7 +531,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function lcFirst(): StringInterface
     {
-        ($copy = clone $this)->string = lcfirst($this->string);
+        $copy = clone $this;
+        $copy->string = lcfirst($this->string);
+        
         return $copy;
     }
 
@@ -520,7 +550,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             $str .= $this->index(random_int(0, $this->lastIndex()));
         }
 
-        ($copy = clone $this)->string = $str;
+        $copy = clone $this;
+        $copy->string = $str;
+        
         return $copy;
     }
 
@@ -537,7 +569,7 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function lastIndex():? int 
     {
-        if(($count = $this->length()) === 0)
+        if (($count = $this->length()) === 0)
         {
             return null ;
         }
@@ -572,7 +604,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             return  $left > $right ? 1 : -1 ;
         });
 
-        ($copy = clone $this)->string = implode('', $chars));
+        $copy = clone $this;
+        $copy->string = implode('', $chars);
+        
         return $copy;
     }
 
@@ -581,7 +615,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function toUpper(): StringInterface
     {
-        ($copy = clone $this)->string = strtoupper($this->string);
+        $copy = clone $this;
+        $copy->string = strtoupper($this->string);
+        
         return $copy;
     }
 
@@ -590,7 +626,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function toLower(): StringInterface 
     {
-        ($copy = clone $this)->string = strtolower($this->string);
+        $copy = clone $this;
+        $copy->string = strtolower($this->string);
+        
         return $copy;
     }
 
@@ -600,7 +638,7 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
      */
     public function split(int $length = 1): array
     {
-        if($length < 1)
+        if ($length < 1)
         {
             throw new \LogicException('Argument [length] must be larger by zero');
         }
@@ -629,7 +667,9 @@ final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arr
             throw new \RuntimeException(error_get_last()['message']);
         }
 
-        ($copy = clone $this)->string = $subject;
+        $copy = clone $this;
+        $copy->string = $subject;
+        
         return $copy;
     }
 
