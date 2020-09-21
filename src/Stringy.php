@@ -73,7 +73,7 @@ final class Stringy implements StringInterface
      */
     public function encode(string $encoding): StringInterface
     {
-        if(str_equals($encoding, 'UTF-8', true))
+        if (Str::equals($encoding, 'UTF-8', true))
         {
             $copy = clone $this;
             $copy->string = Encoding::toUTF8($this->string);
@@ -82,7 +82,7 @@ final class Stringy implements StringInterface
             return $copy;
         }
 
-        if(str_equals_any($encoding, ['ISO-8859-1', 'Windows-1251'], true))
+        if (Str::equalsAny($encoding, ['ISO-8859-1', 'Windows-1251'], true))
         {
             $copy = clone $this;
             $copy->string = Encoding::toWin1252($this->string);
@@ -91,7 +91,7 @@ final class Stringy implements StringInterface
             return $copy;
         }
 
-        if(!str_equals_any($encoding, mb_list_encodings()))
+        if (!Str::equalsAny($encoding, mb_list_encodings()))
         {
             throw new \RuntimeException('Invalid encoding: ' . $encoding);
         }
@@ -200,7 +200,7 @@ final class Stringy implements StringInterface
      */
     public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
     {
-        if(($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
+        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
         {
             return $this->start($requireNeedle ? $index + 1 : $index);
         }
@@ -216,7 +216,7 @@ final class Stringy implements StringInterface
      */
     public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
     {
-        if(($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
+        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
         {
             return $this->substring($requireNeedle ? $index + 1 : $index);
         }
@@ -354,7 +354,7 @@ final class Stringy implements StringInterface
      */
     public function index(int $index): StringInterface 
     {
-        if(!$this->has($index))
+        if (!$this->has($index))
         {
             throw new \RuntimeException('Invalid offset');
         }
@@ -536,20 +536,13 @@ final class Stringy implements StringInterface
     }
 
     /**
-     * @param int $len
+     * @param int $num
      * @return Stringy
      */
-    public function rand(int $len): StringInterface
+    public function rand(int $num): StringInterface
     {
-        $str = '';
-
-        while ($len--)
-        {
-            $str .= $this->index(random_int(0, $this->lastIndex()));
-        }
-
         $copy = clone $this;
-        $copy->string = $str;
+        $copy->string = Str::random($num, $this->string);
         
         return $copy;
     }
@@ -588,22 +581,8 @@ final class Stringy implements StringInterface
      */
     public function shuffle(): StringInterface
     {
-        $chars = $this->split();
-
-        usort($chars, static function (): int
-        {
-            if(($left = random_int(0, 100))
-                == ($right = random_int(0, 100))
-            )
-            {
-                return 0;
-            }
-
-            return  $left > $right ? 1 : -1 ;
-        });
-
         $copy = clone $this;
-        $copy->string = implode('', $chars);
+        $copy->string = Str::shuffle($this->string);
         
         return $copy;
     }
@@ -660,7 +639,7 @@ final class Stringy implements StringInterface
     {
         $subject = @sprintf($this->string, ... $args);
 
-        if($subject === false)
+        if ($subject === false)
         {
             throw new \RuntimeException(error_get_last()['message']);
         }
@@ -726,7 +705,7 @@ final class Stringy implements StringInterface
      */
     public function offsetGet($offset): StringInterface 
     {
-        if(is_string($offset) && mb_strpos($offset, ':') !== false)
+        if (is_string($offset) && mb_strpos($offset, ':') !== false)
         {
             list($start, $end) = explode(':', $offset, 2);
             return $this->interval((int) $start, (int) $end);
