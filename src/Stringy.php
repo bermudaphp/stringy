@@ -313,12 +313,7 @@ final class Stringy implements StringInterface
      */
     public function equals(string $subject, bool $caseInsensitive = false): bool
     {
-        if ($caseInsensitive)
-        {
-            return strcasecmp($this->string, $subject) == 0 ;
-        }
-
-        return strcmp($this->string, $subject) == 0 ;
+        return Str::equals($this->string, $subject, $caseInsensitive);
     }
 
     /**
@@ -328,15 +323,7 @@ final class Stringy implements StringInterface
      */
     public function equalsAny(array $subject, bool $caseInsensitive = false): bool
     {
-        foreach ($subject as $item)
-        {
-            if ($this->equals((string) $item, $caseInsensitive))
-            {
-                return true;
-            }
-        }
-
-        return false ;
+        return Str::equalsAny($this->string, $subject, $caseInsensitive);
     }
 
     /**
@@ -372,13 +359,8 @@ final class Stringy implements StringInterface
      */
     public function interval(int $start, int $end): StringInterface 
     {
-        for ($string = ''; $start <= $end; $start++)
-        {
-            $string .= $this->string[$start];
-        }
-
         $copy = clone $this;
-        $copy->string = $string;
+        $copy->string = Str::interval($this->string, $start, $end);
 
         return $copy;
     }
