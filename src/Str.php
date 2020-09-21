@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App;
+namespace Bermuda\String;
 
 
 final class Str
