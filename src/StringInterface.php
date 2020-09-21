@@ -4,6 +4,9 @@
 namespace Bermuda\String;
 
 
+use Bermuda\Arrayable;
+
+
 /**
  * interface StringInterface
  * @package Bermuda\String
