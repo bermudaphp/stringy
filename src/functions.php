@@ -7,11 +7,12 @@ namespace Bermuda;
 /**
  * @param string $haystack
  * @param string $needle
+ * @param bool $case_insensitive
  * @return bool
  */
-function str_contains(string $haystack, string $needle, int $offset = 0, bool $case_sensitive = false): bool
+function str_contains(string $haystack, string $needle, bool $case_insensitive = false, int $offset = 0): bool
 {
-    return str_pos($needle, $offset, $case_sensitive) !== null;
+    return Str::contains($haystack, $needle, $case_insensitive, $offset);
 }
 
 /**
@@ -60,31 +61,19 @@ function is_json(string $string): bool
  */
 function str_shuffle(string $string): string
 {
-    $chars = \str_split($string, 1);
-    
-    \usort($chars, static function (): int
-    {
-        if(($left = \random_int(0, 100)) == ($right = \random_int(0, 100)))
-        {
-            return 0;
-        }
-
-        return  $left > $right ? 1 : -1 ;
-    });
-
-    return \implode('', $chars);
+    return Str::shuffle($string);
 }
 
 /**
  * @param string $haystack
  * @param string $needle
  * @param int $offset
- * @param bool $caseSensitive
+ * @param bool $case_insensitive
  * @return int|null
  */
-function str_pos(string $haystack, string $needle, int $offset = 0, bool $case_sensitive = false):? int
+function str_pos(string $haystack, string $needle, int $offset = 0, bool $case_insensitive = false):? int
 {
-    if((bool) $case_sensitive)
+    if ($case_insensitive)
     {
         return @($i = \mb_stripos($haystack, $needle, $offset)) !== false ? $i : null ;
     }
@@ -93,37 +82,25 @@ function str_pos(string $haystack, string $needle, int $offset = 0, bool $case_s
 }
 
 /**
- * @param string $subject
- * @param bool $caseSensitive
+ * @param string $left
+ * @param string $right
+ * @param bool $case_insensitive
  * @return bool
  */
-function str_equals(string $left, string $right, bool $case_sensitive = false): bool
+function str_equals(string $left, string $right, bool $case_insensitive = false): bool
 {
-    if($case_sensitive)
-    {
-        return \strcasecmp($left, $right) == 0 ;
-    }
-    
-    return \strcmp($left, $right) == 0 ;
+    return Str::equals($left, $right, $case_insensitive);
 }
 
 /**
  * @param string $x
  * @param string[] $y
- * @param bool $case_sensitive
+ * @param bool $case_insensitive
  * @return bool
  */
-function str_equals_any(string $x, array $y, bool $case_sensitive = false): bool
+function str_equals_any(string $x, array $y, bool $case_insensitive = false): bool
 {
-    foreach ($y as $string)
-    {
-        if(str_equals((string) $string, $case_sensitive))
-        {
-            return true;
-        }
-    }
-    
-    return false;
+    return Str::equalsAny($x, $y, $case_insensitive);
 }
 
 /**
@@ -137,21 +114,13 @@ function str_wrap(string $char, string $unwrapped): string
 }
 
 /**
- * @param string $input
- * @param int $length
+ * @param int $num
+ * @param string $chars
  * @return string
  */
-function str_rand(string $input, int $length): string
+function str_rand(int $num, string $chars = null): string
 {
-    $string = '';
-    $pos = \mb_strlen($input);
-    
-    while($length--)
-    {
-        $string .= $input[\random_int(0, $pos)];
-    }
-    
-    return $string;
+    return Str::random($num, $chars);
 }
 
 /**
@@ -172,12 +141,5 @@ function substring(string $string, int $pos, int $length = null): string
  */
 function str_interval(string $input, int $start, int $end): string 
 {
-    $string = '';
-    
-    for ($string = ''; $start <= $end; $start++)
-    {
-        $string .= $input[$start];
-    }
-
-    return $string;
+    return Str::interval($input, $start, $end);
 }
