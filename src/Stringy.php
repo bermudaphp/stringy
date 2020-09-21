@@ -6,7 +6,7 @@ namespace Bermuda\String;
 
 use Traversable;
 use ForceUTF8\Encoding;
-use Bermuda\Enumerable\Arrayable;
+use Bermuda\Arrayable;
 use Bermuda\Iterator\StringIterator;
 
 
