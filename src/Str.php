@@ -24,13 +24,13 @@ final class Str
     }
 
     /**
-     * @param string $needle
      * @param string $haystack
+     * @param string $needle
      * @param bool $caseInsensitive
      * @param int $offset
      * @return bool
      */
-    public static function contains(string $needle, string $haystack, bool $caseInsensitive = true, int $offset = 0): bool
+    public static function contains(string $haystack, string $needle, bool $caseInsensitive = true, int $offset = 0): bool
     {
         return $caseInsensitive ? mb_stripos($needle, $haystack, $offset) : mb_strpos($needle, $haystack, $offset);
     }
