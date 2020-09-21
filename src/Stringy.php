@@ -6,15 +6,13 @@ namespace Bermuda\String;
 
 use Traversable;
 use ForceUTF8\Encoding;
-use Bermuda\Arrayable;
-use Bermuda\Iterator\StringIterator;
 
 
 /**
  * Class Stringy
  * @package Bermuda\Stringy
  */
-final class Stringy implements \IteratorAggregate, \ArrayAccess, \Countable, Arrayable, Jsonable
+final class Stringy implements StringInterface
 {
     private string $string;
     private string $encoding;
