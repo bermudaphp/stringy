@@ -10,9 +10,9 @@ final class Str
     {
     }
 
-    private static string $numbers = '0123456789';
-    private static string $symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
-    private static string $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    private const $numbers = '0123456789';
+    private const $symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
+    private const $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     /**
      * @param string $x
@@ -31,7 +31,7 @@ final class Str
      */
     public static function filename(string $ext = ''): string
     {
-        return static::random(7, static::chars . static::numbers) . $ext;
+        return static::random(7, static::chars . static::numbers) . '.' ltrim($ext, '.');
     }
     
      /**
@@ -100,7 +100,7 @@ final class Str
      */
     public static function random(int $num, ?string $chars = null): string
     {
-        $chars = $chars ?? static::$numbers . static::$chars . static::$symbols;
+        $chars = $chars ?? static::numbers . static::chars . static::symbols;
         $max = strlen($chars) - 1;
 
         $string = '';
