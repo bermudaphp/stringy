@@ -22,6 +22,25 @@ final class Str
     {
         return $caseInsensitive ? strcasecmp($x, $y) == 0 : strcmp($x, $y) == 0;
     }
+    
+    /**
+     * @param string $content
+     * @return bool
+     */
+    public static function isJson(string $content): bool
+    {
+        try
+        {
+            json_decode($content, null, JSON_THROW_ON_ERROR);
+        }
+        
+        catch(\JsonException $e)
+        {
+            return false;
+        }
+        
+        return true;
+    }
 
     /**
      * @param string $haystack
@@ -67,7 +86,7 @@ final class Str
 
         usort($chars, static function (): int
         {
-            if(($left = random_int(0, 100)) == ($right = random_int(0, 100)))
+            if (($left = random_int(0, 100)) == ($right = random_int(0, 100)))
             {
                 return 0;
             }
