@@ -10,7 +10,9 @@ final class Str
     {
     }
 
-    private static string $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[~`!@#$%^&*()}{?<>/|_=+-]';
+    private static string $numbers = '0123456789';
+    private static string $symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
+    private static string $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     /**
      * @param string $x
@@ -21,6 +23,43 @@ final class Str
     public static function equals(string $x, string $y, bool $caseInsensitive = true): bool
     {
         return $caseInsensitive ? strcasecmp($x, $y) == 0 : strcmp($x, $y) == 0;
+    }
+    
+    /**
+     * @param string $ext
+     * @return string
+     */
+    public static function filename(string $ext = ''): string
+    {
+        return static::random(7, static::chars . static::numbers) . $ext;
+    }
+    
+     /**
+     * @param int $num
+     * @param bool $useSymbols
+     * @return string
+     */
+    public static function pswd(int $num, bool $useSymbols = true): string
+    {
+        if ($useSymbols)
+        {
+            if ($num < 3)
+            {
+                return static::random($num);
+            }
+            
+            if ($num % 3 == 0)
+            {
+                return static::random($num = $num / 3, static::numbers) .
+                    static::random($num, static::chars) .
+                    static::random($num, static::symbols);
+            }
+            
+            return static::random($multi = ($round = ceil($num / 3)) * 2, static::numbers . static::chars) 
+                . static::random($num - $multi, static::symbols); 
+        }
+        
+        return static::random($num, static::numbers . static::chars);
     }
     
     /**
@@ -58,11 +97,10 @@ final class Str
      * @param int $num
      * @param string|null $chars
      * @return string
-     * @throws \Exception
      */
     public static function random(int $num, ?string $chars = null): string
     {
-        $chars = $chars ?? static::$chars;
+        $chars = $chars ?? static::$numbers . static::$chars . static::$symbols;
         $max = strlen($chars) - 1;
 
         $string = '';
