@@ -10,9 +10,9 @@ final class Str
     {
     }
 
-    private const $numbers = '0123456789';
-    private const $symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
-    private const $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    private const numbers = '0123456789';
+    private const symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
+    private const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     /**
      * @param string $x
