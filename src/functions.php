@@ -21,38 +21,28 @@ function str_contains(string $haystack, string $needle, bool $case_insensitive =
  */
 function str_camel_case(string $string): string 
 {
-        $replaced = '';
+    $replaced = '';
 
-        foreach (explode('_', $string) as $i => $segment)
+    foreach (explode('_', $string) as $i => $segment)
+    {
+        if ($i > 0)
         {
-            if ($i > 0)
-            {
-                $segment = ucfirst($segment);
-            }
-
-            $replaced .= $segment;
+            $segment = ucfirst($segment);
         }
 
-        return $replaced;
+        $replaced .= $segment;
     }
+
+    return $replaced;
+}
 
 /**
- * @param string $string
+ * @param string $content
  * @return bool
  */
-function is_json(string $string): bool
+function is_json(string $content): bool
 {
-    try
-    {
-        json_decode($string, true, 512, JSON_THROW_ON_ERROR);
-    } 
-        
-    catch (\Throwable $e)
-    {
-        return false;
-    }
-
-    return true;
+    return Str::isJson($content);
 }
 
 /**
