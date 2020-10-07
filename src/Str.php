@@ -55,8 +55,10 @@ final class Str
                     static::random($num, static::symbols);
             }
             
-            return static::random($multi = ($round = ceil($num / 3)) * 2, static::numbers . static::chars) 
-                . static::random($num - $multi, static::symbols); 
+            $pswd = static::random($multi = ($round = ceil($num / 3)) * 2, static::numbers . static::chars) 
+                . static::random($num - $multi, static::symbols);
+            
+            return static::shuffle($pswd);
         }
         
         return static::random($num, static::numbers . static::chars);
