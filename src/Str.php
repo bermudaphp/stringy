@@ -31,7 +31,7 @@ final class Str
      */
     public static function filename(string $ext = ''): string
     {
-        return static::random(7, static::chars . static::numbers) . '.' ltrim($ext, '.');
+        return static::random(7, static::chars . static::numbers) . '.' . ltrim($ext, '.');
     }
     
      /**
