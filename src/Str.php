@@ -166,7 +166,7 @@ final class Str
      */
     public static function match(string $regexp, string $subject): bool
     {
-        return preg_match($regexp, $subject) != 0;
+        return preg_match($regexp, $subject) == 1;
     }
 
     /**
