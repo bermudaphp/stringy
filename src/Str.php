@@ -1,9 +1,12 @@
 <?php
 
-
 namespace Bermuda\String;
 
 
+/**
+ * Class Str
+ * @package Bermuda\String
+ */
 final class Str
 {
     private function __construct()
@@ -143,7 +146,7 @@ final class Str
      * @param bool $caseInsensitive
      * @return bool
      */
-    public function equalsAny(string $x, array $any, bool $caseInsensitive = true): bool
+    public static function equalsAny(string $x, array $any, bool $caseInsensitive = true): bool
     {
         foreach ($any as $string)
         {
@@ -154,6 +157,16 @@ final class Str
         }
 
         return false;
+    }
+
+    /**
+     * @param string $regexp
+     * @param string $subject
+     * @return bool
+     */
+    public static function match(string $regexp, string $subject): bool
+    {
+        return preg_match($regexp, $subject) != 0;
     }
 
     /**
