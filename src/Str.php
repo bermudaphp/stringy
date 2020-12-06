@@ -29,12 +29,13 @@ final class Str
     }
     
     /**
+     * Generate random filename 
      * @param string $ext
      * @return string
      */
     public static function filename(string $ext = ''): string
     {
-        return static::random(7, static::chars . static::numbers) . '.' . ltrim($ext, '.');
+        return static::random(7, static::chars . static::numbers) . (empty($ext) ? '' : ltrim($ext, '. '));
     }
     
      /**
@@ -157,6 +158,17 @@ final class Str
         }
 
         return false;
+    }
+    
+    /**
+     * @param string $subject
+     * @param bool $multibyte
+     * @param string|null $encoding
+     * @return int
+     */
+    public static function length(string $subject, bool $multibyte = false, ?string $encoding = null): int
+    {
+        return $multibyte ? mb_strlen($subject, $encoding ?? mb_internal_encoding()) : strlen($subject);
     }
 
     /**
