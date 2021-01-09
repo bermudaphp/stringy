@@ -96,7 +96,15 @@ final class Str
      */
     public static function contains(string $haystack, string $needle, bool $caseInsensitive = true, int $offset = 0): bool
     {
-        return $caseInsensitive ? mb_stripos($needle, $haystack, $offset) : mb_strpos($needle, $haystack, $offset);
+        try
+        {
+            return $caseInsensitive ? mb_stripos($needle, $haystack, $offset) : mb_strpos($needle, $haystack, $offset);
+        }
+
+        catch (\Throwable $e)
+        {
+            return false;
+        }
     }
 
     /**
