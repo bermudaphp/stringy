@@ -98,13 +98,24 @@ final class Str
     {
         try
         {
-            return $caseInsensitive ? mb_stripos($needle, $haystack, $offset) : mb_strpos($needle, $haystack, $offset);
+            return ($caseInsensitive ? mb_stripos($haystack, $needle, $offset) :
+                    mb_strpos($haystack, $needle, $offset)) !== false;
         }
 
         catch (\Throwable $e)
         {
             return false;
         }
+    }
+    
+    /**
+     * @param string $haystack
+     * @param string $separator
+     * @return array
+     */
+    public static function explode(string $haystack, string $separator, int ?$limit = null): array
+    {
+        return explode($separator, $haystack, $limit);
     }
 
     /**
