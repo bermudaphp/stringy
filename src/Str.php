@@ -113,7 +113,7 @@ final class Str
      * @param string $separator
      * @return array
      */
-    public static function explode(string $haystack, string $separator, int ?$limit = null): array
+    public static function explode(string $haystack, string $separator, ?int $limit = null): array
     {
         return explode($separator, $haystack, $limit);
     }
