@@ -15,7 +15,7 @@ array:5 [▼
   "actually" => DateTime @1612627961 {#1452 ▶}
 ]
 ````
-# Supported currency codes
+# Get supported currency codes
 ```php
 Currency::getCodes();
 ````
