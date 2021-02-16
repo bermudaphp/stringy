@@ -2,7 +2,6 @@
 
 namespace Bermuda\String;
 
-
 /**
  * Class Str
  * @package Bermuda\String
@@ -107,15 +106,16 @@ final class Str
             return false;
         }
     }
-    
+
     /**
      * @param string $haystack
      * @param string $separator
+     * @param int $limit
      * @return array
      */
-    public static function explode(string $haystack, string $separator, ?int $limit = null): array
+    public static function explode(string $haystack, string $separator, int $limit = PHP_INT_MAX): array
     {
-        return explode($separator, $haystack, $limit);
+        return $haystack, explode($separator, $haystack, $limit);
     }
 
     /**
