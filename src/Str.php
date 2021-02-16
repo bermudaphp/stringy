@@ -115,7 +115,7 @@ final class Str
      */
     public static function explode(string $haystack, string $separator, int $limit = PHP_INT_MAX): array
     {
-        return $haystack, explode($separator, $haystack, $limit);
+        return explode($separator, $haystack, $limit);
     }
 
     /**
