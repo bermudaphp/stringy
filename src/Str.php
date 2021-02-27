@@ -28,6 +28,15 @@ final class Str
     }
     
     /**
+     * @param string $string
+     * @return bool
+     */
+    public static function isHTML(string $string): bool
+    {
+        return self::match("/<[^<]+>/", $string);
+    }
+    
+    /**
      * Generate random filename 
      * @param string $ext
      * @return string
