@@ -115,6 +115,26 @@ final class Str
             return false;
         }
     }
+    
+    /**
+     * @param string $haystack
+     * @param string[] $needle
+     * @param bool $caseInsensitive
+     * @param int $offset
+     * @return bool
+     */
+    public static function containsAny(string $haystack, array $needle, bool $caseInsensitive = true, int $offset = 0): bool
+    {
+        foreach ($needle as $item)
+        {
+            if (self::contains($haystack, $item, $caseInsensitive, $offset))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @param string $haystack
