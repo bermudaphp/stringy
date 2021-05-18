@@ -198,15 +198,9 @@ final class Str
     {
         $chars = str_split($string, 1);
 
-        usort($chars, static function (): int
-        {
-            if (($left = random_int(0, 100)) == ($right = random_int(0, 100)))
-            {
-                return 0;
-            }
-
-            return  $left > $right ? 1 : -1 ;
-        });
+        usort($chars, static fn (): int => ($left = random_int(0, 100)) == ($right = random_int(0, 100)) 
+              ? 0 : ($left > $right ? 1 : -1)
+        );
 
         return implode('', $chars);
     }
