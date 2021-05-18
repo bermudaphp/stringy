@@ -158,6 +158,16 @@ final class Str
     {
         return explode($separator, $haystack, $limit);
     }
+    
+    /**
+     * @param string $haystack
+     * @param string $glue
+     * @return string
+     */
+    public static function implode(array $haystack, string $glue = ','): string
+    {
+        return implode($glue, $haystack);
+    }
 
     /**
      * @param int $num
