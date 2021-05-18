@@ -37,6 +37,18 @@ final class Str
     }
     
     /**
+     * @param string $string
+     * @return bool
+     */
+    public static function classnameSplit(string $classname): array
+    {
+        $result = explode('\\', $classname);
+        $classname = array_pop($result);
+
+        return [implode('\\', $result), $classname];
+    }
+    
+    /**
      * Generate random filename 
      * @param string $ext
      * @return string
