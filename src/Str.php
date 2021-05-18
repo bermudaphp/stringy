@@ -37,8 +37,8 @@ final class Str
     }
     
     /**
-     * @param string $string
-     * @return bool
+     * @param string $classname
+     * @return array
      */
     public static function classnameSplit(string $classname): array
     {
