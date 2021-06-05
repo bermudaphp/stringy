@@ -50,7 +50,7 @@ final class Json
         }
 
         try {
-            json_decode($content, JSON_THROW_ON_ERROR);
+            json_decode($content, null, null, JSON_THROW_ON_ERROR);
             return true;
         }
 
