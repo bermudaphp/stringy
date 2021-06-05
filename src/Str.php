@@ -94,17 +94,7 @@ final class Str
      */
     public static function isJson(string $content): bool
     {
-        try
-        {
-            json_decode($content, null, JSON_THROW_ON_ERROR);
-        }
-        
-        catch(\JsonException $e)
-        {
-            return false;
-        }
-        
-        return true;
+        return Json::isJson($content);
     }
 
     /**
