@@ -1,14 +1,12 @@
 <?php
 
-
 namespace Bermuda\String;
-
 
 /**
  * interface Stringable
  * @package Bermuda\String
  */
-interface Stringable
+interface Stringable extends \Stringable
 {
     /**
      * @return string
