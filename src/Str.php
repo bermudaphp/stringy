@@ -26,6 +26,15 @@ final class Str
     {
         return $caseInsensitive ? strcasecmp($x, $y) == 0 : strcmp($x, $y) == 0;
     }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    public static function mimeType(string $content): string
+    {
+        return (new \finfo(FILEINFO_MIME_TYPE))->buffer($content);
+    }
     
     /**
      * @param string $string
@@ -46,6 +55,15 @@ final class Str
         $classname = array_pop($result);
 
         return [implode('\\', $result), $classname];
+    }
+
+    /**
+     * @param string $classname
+     * @return array
+     */
+    public static function classname(string $classname): string
+    {
+        return self::classnameSplit($classname)[1];
     }
     
     /**
