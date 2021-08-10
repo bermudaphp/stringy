@@ -37,6 +37,24 @@ final class Str
     }
 
     /**
+     * @param string $subject
+     * @param string ...$segments
+     */
+    public static function prepend(string &$subject, string ... $segments): void
+    {
+        $subject = self::implode($segments, '') . $subject;
+    }
+
+    /**
+     * @param string $subject
+     * @param string ...$segments
+     */
+    public static function append(string &$subject, string ... $segments): void
+    {
+        $subject .= self::implode($segments, '');
+    }
+
+    /**
      * @param string $content
      * @return string
      */
