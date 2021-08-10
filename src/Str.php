@@ -33,7 +33,21 @@ final class Str
      */
     public static function mimeType(string $content): string
     {
-        return (new \finfo(FILEINFO_MIME_TYPE))->buffer($content);
+        return self::finfoBuffer(FILEINFO_MIME_TYPE, $content);
+    }
+
+    /**
+     * @param string $content
+     * @return string
+     */
+    public static function ext(string $content): string
+    {
+        return self::finfoBuffer(FILEINFO_EXTENSION, $content);
+    }
+
+    private static function finfoBuffer(string $flags, string $content): string
+    {
+        return (new \finfo($flags))->buffer($content);
     }
     
     /**
