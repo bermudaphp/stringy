@@ -116,7 +116,7 @@ final class Str
      */
     public static function uID(int $num = 6, ?string $prefix = null): string
     {
-        return substr(bin2hex(random_bytes(ceil($num))), 0, $num);
+        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($num))), 0, $num);
     }
     
      /**
