@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Bermuda\String;
 
-
 use Bermuda\Arrayable;
-
 
 /**
  * interface StringInterface
