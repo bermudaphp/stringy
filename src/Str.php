@@ -113,7 +113,17 @@ final class Str
      * @param bool $useSymbols
      * @return string
      */
-    public static function pswd(int $num, bool $useSymbols = true): string
+    public static function uID(int $num = 6, ?string $prefix = null): string
+    {
+        return substr(bin2hex(random_bytes(ceil($num))), 0, $num);
+    }
+    
+     /**
+     * @param int $num
+     * @param bool $useSymbols
+     * @return string
+     */
+    public static function pswd(int $num = 8, bool $useSymbols = true): string
     {
         if ($useSymbols)
         {
