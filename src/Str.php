@@ -100,12 +100,13 @@ final class Str
     
     /**
      * Generate random filename 
-     * @param string $ext
+     * @param string|null $ext
+     * @param string|null $prefix
      * @return string
      */
-    public static function filename(string $ext = ''): string
+    public static function filename(?string $ext = null, ?string $prefix = null): string
     {
-        return static::random(7, static::chars . static::numbers) . (empty($ext) ? '' : ltrim($ext, '. '));
+        return static::uID(7, $prefix) . ( $ext == null ? '' : '.' . ltrim($ext, '.'));
     }
     
      /**
