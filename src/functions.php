@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Bermuda;
 
-
 use Bermuda\String\Str;
-
 
 /**
  * @param string $haystack
