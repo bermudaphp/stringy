@@ -1,13 +1,10 @@
 <?php
 
-
 namespace Bermuda\String;
-
 
 use Traversable;
 use ForceUTF8\Encoding;
 use Bermuda\Iterator\StringIterator;
-
 
 /**
  * Class Stringy
