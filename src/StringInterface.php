@@ -13,12 +13,12 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
     /**
      * dump string and die
      */
-    public function dd(): void
+    public function dd(): void ;
 
     /**
      * @return string
      */
-    public function encoding(): string 
+    public function encoding(): string ;
    
     /**
      * @param string $encoding
@@ -56,7 +56,7 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @param bool $caseInsensitive
      * @return bool
      */
-    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool
+    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool ;
 
     /**
      * @param int $length
