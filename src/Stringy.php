@@ -221,7 +221,7 @@ final class Stringy implements StringInterface
     {
         if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
         {
-            return $this->substring($requireNeedle ? $index + 1 : $index);
+            return $this->substring($requireNeedle ? $index : $index + (new self($needle))->length());
         }
 
         return null ;
