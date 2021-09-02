@@ -35,6 +35,15 @@ final class Str
     {
         return self::finfoBuffer(FILEINFO_MIME_TYPE, $content);
     }
+    
+    /**
+     * @param int $length
+     * @return StringInterface
+     */
+    public function slice(int $length): StringInterface
+    {
+        return $this->substring($length);
+    }
 
     /**
      * @param string $subject
