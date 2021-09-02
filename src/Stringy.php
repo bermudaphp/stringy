@@ -20,7 +20,12 @@ final class Stringy implements StringInterface
         $this->string = $string;
         $this->encoding = $encoding ?? mb_internal_encoding();
     }
-    
+
+    public function copy(): StringInterface
+    {
+        // TODO: Implement copy() method.
+    }
+
     /**
      * @return string
      */
