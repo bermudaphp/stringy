@@ -23,7 +23,7 @@ final class Stringy implements StringInterface
 
     public function copy(): StringInterface
     {
-        // TODO: Implement copy() method.
+        return new self($this->string, $this->encoding);
     }
 
     /**
