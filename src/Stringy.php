@@ -41,6 +41,15 @@ final class Stringy implements StringInterface
     {
         dd($this->string);
     }
+    
+    /**
+     * @param int $bytes
+     * @return StringInterface
+     */
+    public function slice(int $bytes): StringInterface
+    {
+        return $this->substring($bytes);
+    }
 
     /**
      * @return array
