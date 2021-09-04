@@ -19,6 +19,8 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @return string
      */
     public function encoding(): string ;
+    
+    public function slice(int $bytes): StringInterface ;
    
     /**
      * @param string $encoding
