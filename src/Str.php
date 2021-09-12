@@ -295,12 +295,8 @@ final class Str
         return $string;
     }
 
-    /**
-     * @param int $length
-     * @return IString
-     */
-    public function slice(int $length): IString
+    public static function slice(string $subject, int $length): string
     {
-        return $this->substring($length);
+        return substr($subject, $length);
     }
 }
