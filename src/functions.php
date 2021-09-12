@@ -4,6 +4,11 @@ namespace Bermuda;
 
 use Bermuda\String\Str;
 
+public function _string(string $subject): Stringy
+{
+    return new Stringy($subject);
+}
+
 /**
  * @param string $haystack
  * @param string $needle
