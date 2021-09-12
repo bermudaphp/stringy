@@ -2,12 +2,12 @@
 
 namespace Bermuda\String;
 
-use Bermuda\Iterator\StringIterator;
-use ForceUTF8\Encoding;
-use LogicException;
-use RuntimeException;
 use Throwable;
 use Traversable;
+use LogicException;
+use RuntimeException;
+use ForceUTF8\Encoding;
+use Bermuda\Iterator\StringIterator;
 
 final class _String implements IString
 {
