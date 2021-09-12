@@ -2,15 +2,14 @@
 
 namespace Bermuda\String;
 
-use Traversable;
-use ForceUTF8\Encoding;
 use Bermuda\Iterator\StringIterator;
+use ForceUTF8\Encoding;
+use LogicException;
+use RuntimeException;
+use Throwable;
+use Traversable;
 
-/**
- * Class Stringy
- * @package Bermuda\Stringy
- */
-final class Stringy implements StringInterface
+final class _String implements IString
 {
     private string $string;
     private string $encoding;
@@ -21,7 +20,7 @@ final class Stringy implements StringInterface
         $this->encoding = $encoding ?? mb_internal_encoding();
     }
 
-    public function copy(): StringInterface
+    public function copy(): IString
     {
         return new self($this->string, $this->encoding);
     }
@@ -29,7 +28,7 @@ final class Stringy implements StringInterface
     /**
      * @return string
      */
-    public function __toString(): string 
+    public function __toString(): string
     {
         return $this->string;
     }
@@ -41,20 +40,33 @@ final class Stringy implements StringInterface
     {
         dd($this->string);
     }
-    
+
     /**
      * @param int $bytes
-     * @return StringInterface
+     * @return IString
      */
-    public function slice(int $bytes): StringInterface
+    public function slice(int $bytes): IString
     {
         return $this->substring($bytes);
     }
 
     /**
+     * @param int $pos
+     * @param int|null $length
+     * @return IString
+     */
+    public function substring(int $pos, int $length = null): IString
+    {
+        $copy = clone $this;
+        $copy->string = mb_substr($this->string, $pos, $length);
+
+        return $copy;
+    }
+
+    /**
      * @return array
      */
-    public function toArray(): array 
+    public function toArray(): array
     {
         return [$this];
     }
@@ -74,7 +86,7 @@ final class Stringy implements StringInterface
     /**
      * @return string
      */
-    public function encoding(): string 
+    public function encoding(): string
     {
         return $this->encoding;
     }
@@ -83,88 +95,59 @@ final class Stringy implements StringInterface
      * @param string $encoding
      * @return Stringy
      */
-    public function encode(string $encoding): StringInterface
+    public function encode(string $encoding): IString
     {
-        if (Str::equals($encoding, 'UTF-8', true))
-        {
+        if (Str::equals($encoding, 'UTF-8', true)) {
             $copy = clone $this;
             $copy->string = Encoding::toUTF8($this->string);
             $copy->encoding = 'UTF-8';
-            
+
             return $copy;
         }
 
-        if (Str::equalsAny($encoding, ['ISO-8859-1', 'Windows-1251'], true))
-        {
+        if (Str::equalsAny($encoding, ['ISO-8859-1', 'Windows-1251'], true)) {
             $copy = clone $this;
             $copy->string = Encoding::toWin1252($this->string);
             $copy->encoding = 'ISO-8859-1';
-            
+
             return $copy;
         }
 
-        if (!Str::equalsAny($encoding, mb_list_encodings()))
-        {
-            throw new \RuntimeException('Invalid encoding: ' . $encoding);
+        if (!Str::equalsAny($encoding, mb_list_encodings())) {
+            throw new RuntimeException('Invalid encoding: ' . $encoding);
         }
-        
+
         $copy = clone $this;
         $copy->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
         $copy->encoding = $encoding;
-        
+
         return $copy;
     }
 
     /**
-     * @param string $needle
-     * @param int $offset
-     * @param bool $caseInsensitive
-     * @return int|null
-     */
-    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false):? int
-    {
-        if ($caseInsensitive)
-        {
-            return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null ;
-        }
-
-        return @($i = mb_strpos($this->string, $needle, $offset)) !== false ? $i : null ;
-    }
-
-    /**
      * @param string $delim
-     * @return StringInterface[]|string[]
+     * @return IString[]|string[]
      */
     public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array
     {
-        if ($asString)
-        {
+        if ($asString) {
             return explode($delim, $this->string, $limit);
         }
-        
-        return array_map(static function ($string)
-        {
+
+        return array_map(static function ($string) {
             return new self($string, $this->encoding);
         }, explode($delim, $this->string, $limit));
     }
 
     /**
-     * @return StringInterface
+     * @return IString
      */
-    public function ucFirst(): StringInterface
+    public function ucFirst(): IString
     {
         $copy = clone $this;
         $copy->string = ucfirst($this->string);
 
         return $copy;
-    }
-
-    /**
-     * @return int
-     */
-    public function count(): int
-    {
-        return $this->length();
     }
 
     /**
@@ -175,7 +158,22 @@ final class Stringy implements StringInterface
      */
     public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool
     {
-       return $this->indexOf($needle, $offset, $caseInsensitive) !== null;
+        return $this->indexOf($needle, $offset, $caseInsensitive) !== null;
+    }
+
+    /**
+     * @param string $needle
+     * @param int $offset
+     * @param bool $caseInsensitive
+     * @return int|null
+     */
+    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false): ?int
+    {
+        if ($caseInsensitive) {
+            return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null;
+        }
+
+        return @($i = mb_strpos($this->string, $needle, $offset)) !== false ? $i : null;
     }
 
     /**
@@ -183,23 +181,24 @@ final class Stringy implements StringInterface
      * @param string $substring
      * @return Stringy
      */
-    public function truncate(int $length = 200, string $substring = '...'): StringInterface
+    public function truncate(int $length = 200, string $substring = '...'): IString
     {
         return $this->start($length)->string .= $substring;
     }
 
     /**
-     * @return int
+     * @param int $length
+     * @return IString
      */
-    public function length(): int 
+    public function start(int $length): IString
     {
-        return mb_strlen($this->string);
+        return $this->substring(0, $length);
     }
 
     /**
      * @return int
      */
-    public function getBytes(): int 
+    public function getBytes(): int
     {
         return strlen($this->string);
     }
@@ -208,16 +207,15 @@ final class Stringy implements StringInterface
      * @param string $needle
      * @param bool $requireNeedle
      * @param bool $caseInsensitive
-     * @return StringInterface|null
+     * @return IString|null
      */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
+    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString
     {
-        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
-        {
+        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null) {
             return $this->start($requireNeedle ? $index + 1 : $index);
         }
 
-        return null ;
+        return null;
     }
 
     /**
@@ -226,30 +224,37 @@ final class Stringy implements StringInterface
      * @param bool $caseInsensitive
      * @return Stringy|null
      */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface
+    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString
     {
-        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null)
-        {
+        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null) {
             return $this->substring($requireNeedle ? $index : $index + (new self($needle))->length());
         }
 
-        return null ;
+        return null;
+    }
+
+    /**
+     * @return int
+     */
+    public function length(): int
+    {
+        return mb_strlen($this->string);
     }
 
     /**
      * @param string $algorithm
      * @return static
      */
-    public function hash(string $algorithm = 'sha512'): string 
+    public function hash(string $algorithm = 'sha512'): string
     {
         return hash($algorithm, $this->string);
     }
 
     /**
      * @param string $charlist
-     * @return StringInterface
+     * @return IString
      */
-    public function trim(string $charlist = ' '): StringInterface
+    public function trim(string $charlist = ' '): IString
     {
         $copy = clone $this;
         $copy->string = trim($this->string, $charlist);
@@ -259,9 +264,9 @@ final class Stringy implements StringInterface
 
     /**
      * @param string $charlist
-     * @return StringInterface
+     * @return IString
      */
-    public function ltrim(string $charlist = ' '): StringInterface
+    public function ltrim(string $charlist = ' '): IString
     {
         $copy = clone $this;
         $copy->string = ltrim($this->string, $charlist);
@@ -271,9 +276,9 @@ final class Stringy implements StringInterface
 
     /**
      * @param string $charlist
-     * @return StringInterface
+     * @return IString
      */
-    public function rtrim(string $charlist = ' '): StringInterface
+    public function rtrim(string $charlist = ' '): IString
     {
         $copy = clone $this;
         $copy->string = rtrim($this->string, $charlist);
@@ -284,9 +289,9 @@ final class Stringy implements StringInterface
     /**
      * @param string|array $search
      * @param string|array $replace
-     * @return StringInterface
+     * @return IString
      */
-    public function replace($search, $replace): StringInterface
+    public function replace($search, $replace): IString
     {
         $copy = clone $this;
         $copy->string = str_replace($search, $replace, $this);
@@ -296,36 +301,14 @@ final class Stringy implements StringInterface
 
     /**
      * @param string $string
-     * @return StringInterface
+     * @return IString
      */
-    public function prepend(string $string): StringInterface
-    {
-        $copy = clone $this;
-        $copy->string = $string . $this->string;
-
-        return $copy;
-    }
-
-    /**
-     * @param string $string
-     * @return StringInterface
-     */
-    public function append(string $string): StringInterface
+    public function append(string $string): IString
     {
         $copy = clone $this;
         $copy->string .= $string;
 
         return $copy;
-    }
-
-    /**
-     * @param string $subject
-     * @param bool $caseInsensitive
-     * @return bool
-     */
-    public function equals(string $subject, bool $caseInsensitive = false): bool
-    {
-        return Str::equals($this->string, $subject, $caseInsensitive);
     }
 
     /**
@@ -347,15 +330,63 @@ final class Stringy implements StringInterface
     }
 
     /**
-     * @param int $index
-     * @return StringInterface
-     * @throws \RuntimeException
+     * @param string $char
+     * @return IString
      */
-    public function index(int $index): StringInterface 
+    public function wrap(string $char): IString
     {
-        if (!$this->has($index))
-        {
-            throw new \RuntimeException('Invalid offset');
+        return $this->prepend($char)->string .= $char;
+    }
+
+    /**
+     * @param string $string
+     * @return IString
+     */
+    public function prepend(string $string): IString
+    {
+        $copy = clone $this;
+        $copy->string = $string . $this->string;
+
+        return $copy;
+    }
+
+    /**
+     * @param string|null $char
+     * @return bool
+     */
+    public function isWrapped(string $char): bool
+    {
+        return ($char = new self($char))->first()->equals($char)
+            && $char->last()->equals($char);
+    }
+
+    /**
+     * @param string $subject
+     * @param bool $caseInsensitive
+     * @return bool
+     */
+    public function equals(string $subject, bool $caseInsensitive = false): bool
+    {
+        return Str::equals($this->string, $subject, $caseInsensitive);
+    }
+
+    /**
+     * @return IString|null
+     */
+    public function first(): ?IString
+    {
+        return $this->index(0);
+    }
+
+    /**
+     * @param int $index
+     * @return IString
+     * @throws RuntimeException
+     */
+    public function index(int $index): IString
+    {
+        if (!$this->has($index)) {
+            throw new RuntimeException('Invalid offset');
         }
 
         $copy = clone $this;
@@ -365,100 +396,50 @@ final class Stringy implements StringInterface
     }
 
     /**
-     * @param int $start
-     * @param int $end
-     * @return StringInterface
-     */
-    public function interval(int $start, int $end): StringInterface 
-    {
-        $copy = clone $this;
-        $copy->string = Str::interval($this->string, $start, $end);
-
-        return $copy;
-    }
-
-    /**
      * @param int $index
      * @return bool
      */
-    public function has(int $index): bool 
+    public function has(int $index): bool
     {
         return abs($index) <= $this->lastIndex();
     }
 
     /**
-     * @return StringInterface|null
+     * @return int
      */
-    public function first():? StringInterface 
+    public function lastIndex(): ?int
     {
-        return $this->index(0);
+        if (($count = $this->length()) === 0) {
+            return null;
+        }
+
+        return $count - 1;
     }
 
     /**
-     * @return StringInterface|null
+     * @return IString|null
      */
-    public function last():? StringInterface
+    public function last(): ?IString
     {
         return $this->index($this->lastIndex());
-    }
-
-    /**
-     * @param string $char
-     * @return StringInterface
-     */
-    public function wrap(string $char): StringInterface
-    {
-        return $this->prepend($char)->string .= $char;
-    }
-
-    /**
-     * @param string|null $char
-     * @return bool
-     */
-    public function isWrapped(string $char): bool
-    {
-        return ($char = new self($char))->first()->equals($char) 
-            && $char->last()->equals($char);
     }
 
     /**
      * @param int $pos
      * @return self[]
      */
-    public function break(int $pos): array 
+    public function break(int $pos): array
     {
         return [$this->start($pos), $this->substring($pos)];
     }
 
     /**
-     * @param int $pos
-     * @param int|null $length
-     * @return StringInterface
-     */
-    public function substring(int $pos, int $length = null): StringInterface
-    {
-        $copy = clone $this;
-        $copy->string = mb_substr($this->string, $pos, $length);
-
-        return $copy;
-    }
-
-    /**
      * @param int $length
-     * @return StringInterface
+     * @return IString
      */
-    public function start(int $length): StringInterface 
+    public function end(int $length): IString
     {
-        return $this->substring(0, $length);
-    }
-
-    /**
-     * @param int $length
-     * @return StringInterface
-     */
-    public function end(int $length): StringInterface
-    {
-        return $this->substring(- $length = abs($length), $length);
+        return $this->substring(-$length = abs($length), $length);
     }
 
     /**
@@ -466,9 +447,9 @@ final class Stringy implements StringInterface
      * @param string|string[] $replacement
      * @param int $limit
      * @param int|null $count
-     * @return StringInterface
+     * @return IString
      */
-    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): StringInterface 
+    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): IString
     {
         $copy = clone $this;
         $copy->string = preg_replace($pattern, $replacement, $this->string, $limit, $count);
@@ -483,13 +464,12 @@ final class Stringy implements StringInterface
      * @param int $offset
      * @return bool
      */
-    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool 
+    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
     {
         $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
 
-        if ($error = error_get_last())
-        {
-            throw new \RuntimeException($error['message']);
+        if ($error = error_get_last()) {
+            throw new RuntimeException($error['message']);
         }
 
         return $match;
@@ -502,7 +482,7 @@ final class Stringy implements StringInterface
      * @param int $offset
      * @return bool
      */
-    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool 
+    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
     {
         return preg_match_all($pattern, $this->string, $matches, $flags, $offset) === 1;
     }
@@ -510,22 +490,22 @@ final class Stringy implements StringInterface
     /**
      * @return Stringy
      */
-    public function revers(): StringInterface
+    public function revers(): IString
     {
         $copy = clone $this;
         $copy->string = strrev($this->string);
-        
+
         return $copy;
     }
 
     /**
      * @return Stringy
      */
-    public function lcFirst(): StringInterface
+    public function lcFirst(): IString
     {
         $copy = clone $this;
         $copy->string = lcfirst($this->string);
-        
+
         return $copy;
     }
 
@@ -533,91 +513,76 @@ final class Stringy implements StringInterface
      * @param int $num
      * @return Stringy
      */
-    public function rand(int $num): StringInterface
+    public function rand(int $num): IString
     {
         $copy = clone $this;
         $copy->string = Str::random($num, $this->string);
-        
+
         return $copy;
     }
 
     /**
      * Write string
      */
-    public function write(): void 
+    public function write(): void
     {
         echo $this->string;
     }
 
     /**
-     * @return int
-     */
-    public function lastIndex():? int 
-    {
-        if (($count = $this->length()) === 0)
-        {
-            return null ;
-        }
-
-        return $count - 1 ;
-    }
-
-    /**
      * @return int|null
      */
-    public function firstIndex():? int 
+    public function firstIndex(): ?int
     {
-        return $this->length() === 0 ? null : 0 ;
+        return $this->length() === 0 ? null : 0;
     }
 
     /**
      * @return static
      */
-    public function shuffle(): StringInterface
+    public function shuffle(): IString
     {
         $copy = clone $this;
         $copy->string = Str::shuffle($this->string);
-        
+
         return $copy;
     }
 
     /**
      * @return static
      */
-    public function toUpper(): StringInterface
+    public function toUpper(): IString
     {
         $copy = clone $this;
         $copy->string = strtoupper($this->string);
-        
+
         return $copy;
     }
 
     /**
      * @return static
      */
-    public function toLower(): StringInterface 
+    public function toLower(): IString
     {
         $copy = clone $this;
         $copy->string = strtolower($this->string);
-        
+
         return $copy;
     }
 
     /**
      * @param int $length
-     * @return StringInterface[]
+     * @return IString[]
      */
     public function split(int $length = 1): array
     {
-        if ($length < 1)
-        {
-            throw new \LogicException('Argument [length] must be larger by zero');
+        if ($length < 1) {
+            throw new LogicException('Argument [length] must be larger by zero');
         }
 
         $split = [];
 
-        for ($count = $this->count(); $count > 0 ; $count -= $length)
-        {
+        for ($count = $this->count(); $count > 0; $count -= $length) {
             $split[] = $this->substring(-$count, $length);
         }
 
@@ -625,22 +590,29 @@ final class Stringy implements StringInterface
     }
 
     /**
-     * @param mixed ... $args
-     * @return StringInterface
-     * @throws \RuntimeException
+     * @return int
      */
-    public function format(... $args): StringInterface
+    public function count(): int
+    {
+        return $this->length();
+    }
+
+    /**
+     * @param mixed ... $args
+     * @return IString
+     * @throws RuntimeException
+     */
+    public function format(...$args): IString
     {
         $subject = @sprintf($this->string, ... $args);
 
-        if ($subject === false)
-        {
-            throw new \RuntimeException(error_get_last()['message']);
+        if ($subject === false) {
+            throw new RuntimeException(error_get_last()['message']);
         }
 
         $copy = clone $this;
         $copy->string = $subject;
-        
+
         return $copy;
     }
 
@@ -649,13 +621,9 @@ final class Stringy implements StringInterface
      */
     public function isJson(): bool
     {
-        try
-        {
+        try {
             json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
-        } 
-        
-        catch (\Throwable $e)
-        {
+        } catch (Throwable $e) {
             return false;
         }
 
@@ -666,9 +634,9 @@ final class Stringy implements StringInterface
      * @param int $options
      * @return string
      */
-    public function toJson(int $options = 0): string 
+    public function toJson(int $options = 0): string
     {
-        return json_encode($this->string, $options|JSON_THROW_ON_ERROR);
+        return json_encode($this->string, $options | JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -685,7 +653,7 @@ final class Stringy implements StringInterface
      */
     public function offsetExists($offset)
     {
-        return (int) $offset > 0 && (int) $offset <= $this->count();
+        return (int)$offset > 0 && (int)$offset <= $this->count();
     }
 
     /**
@@ -697,15 +665,27 @@ final class Stringy implements StringInterface
      * @return mixed Can return all value types.
      * @since 5.0.0
      */
-    public function offsetGet($offset): StringInterface 
+    public function offsetGet($offset): IString
     {
-        if (is_string($offset) && mb_strpos($offset, ':') !== false)
-        {
+        if (is_string($offset) && mb_strpos($offset, ':') !== false) {
             list($start, $end) = explode(':', $offset, 2);
-            return $this->interval((int) $start, (int) $end);
+            return $this->interval((int)$start, (int)$end);
         }
 
-        return $this->index((int) $offset);
+        return $this->index((int)$offset);
+    }
+
+    /**
+     * @param int $start
+     * @param int $end
+     * @return IString
+     */
+    public function interval(int $start, int $end): IString
+    {
+        $copy = clone $this;
+        $copy->string = Str::interval($this->string, $start, $end);
+
+        return $copy;
     }
 
     /**
@@ -722,7 +702,7 @@ final class Stringy implements StringInterface
      */
     public function offsetSet($offset, $value)
     {
-        throw new \RuntimeException('Object: Bermuda\String\Stringy is immutable');
+        throw new RuntimeException('Object: Bermuda\String\_String is immutable');
     }
 
     /**
@@ -736,6 +716,6 @@ final class Stringy implements StringInterface
      */
     public function offsetUnset($offset)
     {
-        throw new \RuntimeException('Object: Bermuda\String\Stringy is immutable');
+        throw new RuntimeException('Object: Bermuda\String\_String is immutable');
     }
 }
