@@ -8,25 +8,20 @@ use Countable;
 use IteratorAggregate;
 use RuntimeException;
 
-interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, Jsonable, Stringable
+interface _StringInterface extends IteratorAggregate, ArrayAccess, Countable, Arrayable, Jsonable, Stringable
 {
-    /**
-     * dump string and die
-     */
-    public function dd(): void;
-
     /**
      * @return string
      */
     public function encoding(): string;
-
-    public function slice(int $bytes): IString;
+    
+    public function slice(int $bytes): self;
 
     /**
      * @param string $encoding
-     * @return IString
+     * @return self
      */
-    public function encode(string $encoding): IString;
+    public function encode(string $encoding): self;
 
     /**
      * @param string $needle
@@ -37,20 +32,20 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
     public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false): ?int;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function copy(): IString;
+    public function copy(): self;
 
     /**
      * @param string $delim
-     * @return IString[]|string[]
+     * @return self[]|string[]
      */
     public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function ucFirst(): IString;
+    public function ucFirst(): self;
 
     /**
      * @param string $needle
@@ -63,9 +58,9 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
     /**
      * @param int $length
      * @param string $substring
-     * @return IString
+     * @return self
      */
-    public function truncate(int $length = 200, string $substring = '...'): IString;
+    public function truncate(int $length = 200, string $substring = '...'): self;
 
     /**
      * @return int
@@ -81,17 +76,17 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
      * @param string $needle
      * @param bool $requireNeedle
      * @param bool $caseInsensitive
-     * @return IString|null
+     * @return self|null
      */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString;
+    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? self;
 
     /**
      * @param string $needle
      * @param bool $requireNeedle
      * @param bool $caseInsensitive
-     * @return IString|null
+     * @return self|null
      */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString;
+    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? self;
 
     /**
      * @param string $algorithm
@@ -103,38 +98,38 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
      * @param string $charlist
      * @return Stringy
      */
-    public function trim(string $charlist = ' '): IString;
+    public function trim(string $charlist = ' '): self;
 
     /**
      * @param string $charlist
-     * @return IString
+     * @return self
      */
-    public function ltrim(string $charlist = ' '): IString;
+    public function ltrim(string $charlist = ' '): self;
 
     /**
      * @param string $charlist
-     * @return IString
+     * @return self
      */
-    public function rtrim(string $charlist = ' '): IString;
+    public function rtrim(string $charlist = ' '): self;
 
     /**
      * @param string|array $search
      * @param string|array $replace
-     * @return IString
+     * @return self
      */
-    public function replace($search, $replace): IString;
+    public function replace($search, $replace): self;
 
     /**
      * @param string $subject
-     * @return IString
+     * @return self
      */
-    public function prepend(string $subject): IString;
+    public function prepend(string $subject): self;
 
     /**
      * @param string $subject
-     * @return IString
+     * @return self
      */
-    public function append(string $subject): IString;
+    public function append(string $subject): self;
 
     /**
      * @param string $subject
@@ -157,17 +152,17 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
 
     /**
      * @param int $index
-     * @return IString
+     * @return self
      * @throws RuntimeException
      */
-    public function index(int $index): IString;
+    public function index(int $index): self;
 
     /**
      * @param int $start
      * @param int $end
-     * @return IString
+     * @return self
      */
-    public function interval(int $start, int $end): IString;
+    public function interval(int $start, int $end): self;
 
     /**
      * @param int $index
@@ -176,20 +171,20 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
     public function has(int $index): bool;
 
     /**
-     * @return IString|null
+     * @return self|null
      */
-    public function first(): ?IString;
+    public function first(): ?self;
 
     /**
-     * @return IString|null
+     * @return self|null
      */
-    public function last(): ?IString;
+    public function last(): ?self;
 
     /**
      * @param string $char
-     * @return IString
+     * @return self
      */
-    public function wrap(string $char): IString;
+    public function wrap(string $char): self;
 
     /**
      * @param string|null $char
@@ -199,37 +194,37 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
 
     /**
      * @param int $pos
-     * @return IString[]
+     * @return self[]
      */
     public function break(int $pos): array;
 
     /**
      * @param int $pos
      * @param int|null $length
-     * @return IString
+     * @return self
      */
-    public function substring(int $pos, int $length = null): IString;
+    public function substring(int $pos, int $length = null): self;
 
     /**
      * @param int $length
-     * @return IString
+     * @return self
      */
-    public function start(int $length): IString;
+    public function start(int $length): self;
 
     /**
      * @param int $length
-     * @return IString
+     * @return self
      */
-    public function end(int $length): IString;
+    public function end(int $length): self;
 
     /**
      * @param string|string[] $pattern
      * @param string|string[] $replacement
      * @param int $limit
      * @param int|null $count
-     * @return IString
+     * @return self
      */
-    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): IString;
+    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): self;
 
     /**
      * @param string $pattern
@@ -250,20 +245,20 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
     public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function revers(): IString;
+    public function revers(): self;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function lcFirst(): IString;
+    public function lcFirst(): self;
 
     /**
      * @param int $len
-     * @return IString
+     * @return self
      */
-    public function rand(int $len): IString;
+    public function rand(int $len): self;
 
     /**
      * Write string
@@ -281,32 +276,32 @@ interface IString extends IteratorAggregate, ArrayAccess, Countable, Arrayable, 
     public function firstIndex(): ?int;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function shuffle(): IString;
+    public function shuffle(): self;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function toUpper(): IString;
+    public function toUpper(): self;
 
     /**
-     * @return IString
+     * @return self
      */
-    public function toLower(): IString;
+    public function toLower(): self;
 
     /**
      * @param int $length
-     * @return IString[]
+     * @return self[]
      */
     public function split(int $length = 1): array;
 
     /**
      * @param mixed ... $args
-     * @return IString
+     * @return self
      * @throws RuntimeException
      */
-    public function format(...$args): IString;
+    public function format(...$args): self;
 
     /**
      * @return bool
