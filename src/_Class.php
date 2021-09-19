@@ -24,7 +24,6 @@ final class _Class
         return self::split($cls)[0];
     }
 
-
     /**
      * @param string $cls
      * @return array
