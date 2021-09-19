@@ -7,7 +7,6 @@ use Throwable;
 
 final class _String
 {   
-    
     /**
      * @param string $subject
      * @param string ...$segments
