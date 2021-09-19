@@ -85,7 +85,7 @@ function _string(string $subject): _StringInterface
 
         /**
          * @param string $encoding
-         * @return Stringy
+         * @return _StringInterface
          */
         public function encode(string $encoding): _StringInterface
         {
@@ -171,7 +171,7 @@ function _string(string $subject): _StringInterface
         /**
          * @param int $length
          * @param string $substring
-         * @return Stringy
+         * @return _StringInterface
          */
         public function truncate(int $length = 200, string $substring = '...'): _StringInterface
         {
@@ -214,7 +214,7 @@ function _string(string $subject): _StringInterface
          * @param string $needle
          * @param bool $requireNeedle
          * @param bool $caseInsensitive
-         * @return Stringy|null
+         * @return _StringInterface|null
          */
         public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?_StringInterface
         {
@@ -480,7 +480,7 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @return Stringy
+         * @return _StringInterface
          */
         public function revers(): _StringInterface
         {
@@ -491,7 +491,7 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @return Stringy
+         * @return _StringInterface
          */
         public function lcFirst(): _StringInterface
         {
@@ -503,7 +503,7 @@ function _string(string $subject): _StringInterface
 
         /**
          * @param int $num
-         * @return Stringy
+         * @return _StringInterface
          */
         public function rand(int $num): _StringInterface
         {
@@ -530,7 +530,7 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @return static
+         * @return _StringInterface
          */
         public function shuffle(): _StringInterface
         {
@@ -541,7 +541,7 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @return static
+         * @return _StringInterface
          */
         public function toUpper(): _StringInterface
         {
@@ -552,7 +552,7 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @return static
+         * @return _StringInterface
          */
         public function toLower(): _StringInterface
         {
@@ -590,13 +590,13 @@ function _string(string $subject): _StringInterface
         }
 
         /**
-         * @param mixed ... $args
+         * @param string ... $tokens
          * @return _StringInterface
          * @throws RuntimeException
          */
-        public function format(...$args): _StringInterface
+        public function format(string ... $tokens): _StringInterface
         {
-            $subject = @sprintf($this->subject, ... $args);
+            $subject = @sprintf($this->subject, ... $tokens);
 
             if ($subject === false) {
                 throw new RuntimeException(error_get_last()['message']);
