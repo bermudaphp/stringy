@@ -12,7 +12,6 @@ use function mb_stripos;
 use function mb_strpos;
 use function mb_substr;
 
-
 function _string(string $subject): _StringInterface
 {
     return new class implements _StringInterface {
