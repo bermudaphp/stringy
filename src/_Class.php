@@ -14,6 +14,16 @@ final class _Class
     {
         return self::split($cls)[1];
     }
+    
+    /**
+     * @param string $cls
+     * @return array
+     */
+    public static function namespace(string $cls): string
+    {
+        return self::split($cls)[0];
+    }
+
 
     /**
      * @param string $cls
