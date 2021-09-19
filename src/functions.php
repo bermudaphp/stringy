@@ -14,19 +14,15 @@ use function mb_substr;
 
 function _string(string $subject): _StringInterface
 {
-    return new class implements _StringInterface {
-        private string $string;
-        private string $encoding;
-
-        public function __construct(string $string = '', string $encoding = null)
+    return new class($subject) implements _StringInterface {
+        public function __construct(private string $subject = '', private ?string $encoding = null)
         {
-            $this->string = $string;
             $this->encoding = $encoding ?? mb_internal_encoding();
         }
 
         public function copy(): _StringInterface
         {
-            return new self($this->string, $this->encoding);
+            return new self($this->subject, $this->encoding);
         }
 
         /**
@@ -34,15 +30,7 @@ function _string(string $subject): _StringInterface
          */
         public function __toString(): string
         {
-            return $this->string;
-        }
-
-        /**
-         * dump string and die
-         */
-        public function dd(): void
-        {
-            dd($this->string);
+            return $this->subject;
         }
 
         /**
@@ -62,7 +50,7 @@ function _string(string $subject): _StringInterface
         public function substring(int $pos, int $length = null): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = mb_substr($this->string, $pos, $length);
+            $copy->subject = mb_substr($this->subject, $pos, $length);
 
             return $copy;
         }
@@ -84,7 +72,7 @@ function _string(string $subject): _StringInterface
          */
         public function getIterator(): StringIterator
         {
-            return new StringIterator($this->string);
+            return new StringIterator($this->subject);
         }
 
         /**
@@ -103,7 +91,7 @@ function _string(string $subject): _StringInterface
         {
             if (Str::equals($encoding, 'UTF-8', true)) {
                 $copy = clone $this;
-                $copy->string = Encoding::toUTF8($this->string);
+                $copy->subject = Encoding::toUTF8($this->subject);
                 $copy->encoding = 'UTF-8';
 
                 return $copy;
@@ -111,7 +99,7 @@ function _string(string $subject): _StringInterface
 
             if (Str::equalsAny($encoding, ['ISO-8859-1', 'Windows-1251'], true)) {
                 $copy = clone $this;
-                $copy->string = Encoding::toWin1252($this->string);
+                $copy->subject = Encoding::toWin1252($this->subject);
                 $copy->encoding = 'ISO-8859-1';
 
                 return $copy;
@@ -122,7 +110,7 @@ function _string(string $subject): _StringInterface
             }
 
             $copy = clone $this;
-            $copy->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
+            $copy->subject = mb_convert_encoding($this->subject, $encoding, $this->encoding);
             $copy->encoding = $encoding;
 
             return $copy;
@@ -135,12 +123,12 @@ function _string(string $subject): _StringInterface
         public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array
         {
             if ($asString) {
-                return explode($delim, $this->string, $limit);
+                return explode($delim, $this->subject, $limit);
             }
 
             return array_map(static function ($string) {
                 return new self($string, $this->encoding);
-            }, explode($delim, $this->string, $limit));
+            }, explode($delim, $this->subject, $limit));
         }
 
         /**
@@ -149,7 +137,7 @@ function _string(string $subject): _StringInterface
         public function ucFirst(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = ucfirst($this->string);
+            $copy->subject = ucfirst($this->subject);
 
             return $copy;
         }
@@ -174,10 +162,10 @@ function _string(string $subject): _StringInterface
         public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false): ?int
         {
             if ($caseInsensitive) {
-                return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null;
+                return @($i = mb_stripos($this->subject, $needle, $offset)) !== false ? $i : null;
             }
 
-            return @($i = mb_strpos($this->string, $needle, $offset)) !== false ? $i : null;
+            return @($i = mb_strpos($this->subject, $needle, $offset)) !== false ? $i : null;
         }
 
         /**
@@ -187,7 +175,7 @@ function _string(string $subject): _StringInterface
          */
         public function truncate(int $length = 200, string $substring = '...'): _StringInterface
         {
-            return $this->start($length)->string .= $substring;
+            return $this->start($length)->subject .= $substring;
         }
 
         /**
@@ -204,7 +192,7 @@ function _string(string $subject): _StringInterface
          */
         public function getBytes(): int
         {
-            return strlen($this->string);
+            return strlen($this->subject);
         }
 
         /**
@@ -242,7 +230,7 @@ function _string(string $subject): _StringInterface
          */
         public function length(): int
         {
-            return mb_strlen($this->string);
+            return mb_strlen($this->subject);
         }
 
         /**
@@ -251,7 +239,7 @@ function _string(string $subject): _StringInterface
          */
         public function hash(string $algorithm = 'sha512'): string
         {
-            return hash($algorithm, $this->string);
+            return hash($algorithm, $this->subject);
         }
 
         /**
@@ -261,7 +249,7 @@ function _string(string $subject): _StringInterface
         public function trim(string $charlist = ' '): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = trim($this->string, $charlist);
+            $copy->subject = trim($this->subject, $charlist);
 
             return $copy;
         }
@@ -273,7 +261,7 @@ function _string(string $subject): _StringInterface
         public function ltrim(string $charlist = ' '): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = ltrim($this->string, $charlist);
+            $copy->subject = ltrim($this->subject, $charlist);
 
             return $copy;
         }
@@ -285,7 +273,7 @@ function _string(string $subject): _StringInterface
         public function rtrim(string $charlist = ' '): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = rtrim($this->string, $charlist);
+            $copy->subject = rtrim($this->subject, $charlist);
 
             return $copy;
         }
@@ -298,7 +286,7 @@ function _string(string $subject): _StringInterface
         public function replace($search, $replace): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = str_replace($search, $replace, $this);
+            $copy->subject = str_replace($search, $replace, $this);
 
             return $copy;
         }
@@ -310,7 +298,7 @@ function _string(string $subject): _StringInterface
         public function append(string $string): _StringInterface
         {
             $copy = clone $this;
-            $copy->string .= $string;
+            $copy->subject .= $string;
 
             return $copy;
         }
@@ -322,7 +310,7 @@ function _string(string $subject): _StringInterface
          */
         public function equalsAny(array $subject, bool $caseInsensitive = false): bool
         {
-            return Str::equalsAny($this->string, $subject, $caseInsensitive);
+            return Str::equalsAny($this->subject, $subject, $caseInsensitive);
         }
 
         /**
@@ -330,7 +318,7 @@ function _string(string $subject): _StringInterface
          */
         public function isEmpty(): bool
         {
-            return empty($this->string);
+            return empty($this->subject);
         }
 
         /**
@@ -339,7 +327,7 @@ function _string(string $subject): _StringInterface
          */
         public function wrap(string $char): _StringInterface
         {
-            return $this->prepend($char)->string .= $char;
+            return $this->prepend($char)->subject .= $char;
         }
 
         /**
@@ -349,7 +337,7 @@ function _string(string $subject): _StringInterface
         public function prepend(string $string): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = $string . $this->string;
+            $copy->subject = $string . $this->subject;
 
             return $copy;
         }
@@ -371,7 +359,7 @@ function _string(string $subject): _StringInterface
          */
         public function equals(string $subject, bool $caseInsensitive = false): bool
         {
-            return Str::equals($this->string, $subject, $caseInsensitive);
+            return Str::equals($this->subject, $subject, $caseInsensitive);
         }
 
         /**
@@ -394,7 +382,7 @@ function _string(string $subject): _StringInterface
             }
 
             $copy = clone $this;
-            $copy->string = $this->string[$index];
+            $copy->subject = $this->subject[$index];
 
             return $copy;
         }
@@ -456,7 +444,7 @@ function _string(string $subject): _StringInterface
         public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = preg_replace($pattern, $replacement, $this->string, $limit, $count);
+            $copy->subject = preg_replace($pattern, $replacement, $this->subject, $limit, $count);
 
             return $copy;
         }
@@ -470,7 +458,7 @@ function _string(string $subject): _StringInterface
          */
         public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
         {
-            $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
+            $match = @preg_match($pattern, $this->subject, $matches, $flags, $offset) === 1;
 
             if ($error = error_get_last()) {
                 throw new RuntimeException($error['message']);
@@ -488,7 +476,7 @@ function _string(string $subject): _StringInterface
          */
         public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
         {
-            return preg_match_all($pattern, $this->string, $matches, $flags, $offset) === 1;
+            return preg_match_all($pattern, $this->subject, $matches, $flags, $offset) === 1;
         }
 
         /**
@@ -497,7 +485,7 @@ function _string(string $subject): _StringInterface
         public function revers(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = strrev($this->string);
+            $copy->subject = strrev($this->subject);
 
             return $copy;
         }
@@ -508,7 +496,7 @@ function _string(string $subject): _StringInterface
         public function lcFirst(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = lcfirst($this->string);
+            $copy->subject = lcfirst($this->subject);
 
             return $copy;
         }
@@ -520,7 +508,7 @@ function _string(string $subject): _StringInterface
         public function rand(int $num): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = Str::random($num, $this->string);
+            $copy->subject = Str::random($num, $this->subject);
 
             return $copy;
         }
@@ -530,7 +518,7 @@ function _string(string $subject): _StringInterface
          */
         public function write(): void
         {
-            echo $this->string;
+            echo $this->subject;
         }
 
         /**
@@ -547,7 +535,7 @@ function _string(string $subject): _StringInterface
         public function shuffle(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = Str::shuffle($this->string);
+            $copy->subject = Str::shuffle($this->subject);
 
             return $copy;
         }
@@ -558,7 +546,7 @@ function _string(string $subject): _StringInterface
         public function toUpper(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = strtoupper($this->string);
+            $copy->subject = strtoupper($this->subject);
 
             return $copy;
         }
@@ -569,7 +557,7 @@ function _string(string $subject): _StringInterface
         public function toLower(): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = strtolower($this->string);
+            $copy->subject = strtolower($this->subject);
 
             return $copy;
         }
@@ -608,14 +596,14 @@ function _string(string $subject): _StringInterface
          */
         public function format(...$args): _StringInterface
         {
-            $subject = @sprintf($this->string, ... $args);
+            $subject = @sprintf($this->subject, ... $args);
 
             if ($subject === false) {
                 throw new RuntimeException(error_get_last()['message']);
             }
 
             $copy = clone $this;
-            $copy->string = $subject;
+            $copy->subject = $subject;
 
             return $copy;
         }
@@ -626,7 +614,7 @@ function _string(string $subject): _StringInterface
         public function isJson(): bool
         {
             try {
-                json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
+                json_decode($this->subject, true, 512, JSON_THROW_ON_ERROR);
             } catch (Throwable $e) {
                 return false;
             }
@@ -640,7 +628,7 @@ function _string(string $subject): _StringInterface
          */
         public function toJson(int $options = 0): string
         {
-            return json_encode($this->string, $options | JSON_THROW_ON_ERROR);
+            return json_encode($this->subject, $options | JSON_THROW_ON_ERROR);
         }
 
         /**
@@ -687,7 +675,7 @@ function _string(string $subject): _StringInterface
         public function interval(int $start, int $end): _StringInterface
         {
             $copy = clone $this;
-            $copy->string = Str::interval($this->string, $start, $end);
+            $copy->subject = Str::interval($this->subject, $start, $end);
 
             return $copy;
         }
