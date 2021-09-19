@@ -2,10 +2,6 @@
 
 namespace Bermuda\String;
 
-/**
- * Class Json
- * @package Bermuda\String
- */
 final class Json
 {
     /**
@@ -17,8 +13,7 @@ final class Json
      */
     public static function encode($content, int $flags = 0, int $depth = 512): string
     {
-        if ($content instanceof Jsonable)
-        {
+        if ($content instanceof Jsonable) {
             return $content->toJson($flags);
         }
 
@@ -44,18 +39,14 @@ final class Json
      */
     public static function isJson($content): bool
     {
-        if (!is_string($content))
-        {
+        if (!is_string($content)) {
             return false;
         }
 
         try {
             json_decode($content, null, null, JSON_THROW_ON_ERROR);
             return true;
-        }
-
-        catch (\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             return false;
         }
     }
