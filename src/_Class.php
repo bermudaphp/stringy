@@ -4,6 +4,8 @@ namespace Bermuda\String;
 
 final class _Class
 {
+    private const separator = '\\';
+    
     /**
      * @param string $cls
      * @return array
@@ -19,17 +21,6 @@ final class _Class
      */
     public static function split(string $cls): array
     {
-        return [implode('\\', $segments = explode('\\', $classname)), array_pop($result)];
-    }
-
-    /**
-     * Generate random filename
-     * @param string|null $ext
-     * @param string|null $prefix
-     * @return string
-     */
-    public static function filename(?string $ext = null, ?string $prefix = null): string
-    {
-        return static::uID(7, $prefix) . ($ext == null ? '' : '.' . ltrim($ext, '.'));
+        return [implode(self::separator, $segments = explode(self::separator, $classname)), array_pop($result)];
     }
 }
