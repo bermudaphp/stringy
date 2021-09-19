@@ -46,38 +46,17 @@ final class _String
     }
 
     /**
-     * @param string $classname
-     * @return array
-     */
-    public static function classname(string $classname): string
-    {
-        return self::classnameSplit($classname)[1];
-    }
-
-    /**
-     * @param string $classname
-     * @return array
-     */
-    public static function classnameSplit(string $classname): array
-    {
-        $result = explode('\\', $classname);
-        $classname = array_pop($result);
-
-        return [implode('\\', $result), $classname];
-    }
-
-    /**
-     * @param int $num
+     * @param int $length
      * @param bool $useSymbols
      * @return string
      */
-    public static function uID(int $num = 6, string $prefix = '', string $suffix = ''): string
+    public static function uID(int $length = 6, string $prefix = '', string $suffix = ''): string
     {
-        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($num))), 0, $num) . $suffix;
+        return $prefix.substr(bin2hex(random_bytes(ceil($length))), 0, $length).$suffix;
     }
 
     /**
-     * @param int $num
+     * @param int $length
      * @param bool $useSymbols
      * @return string
      */
@@ -104,7 +83,7 @@ final class _String
     }
 
     /**
-     * @param int $num
+     * @param int $length
      * @param string|null $chars
      * @return string
      */
