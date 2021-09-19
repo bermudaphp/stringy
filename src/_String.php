@@ -2,720 +2,258 @@
 
 namespace Bermuda\String;
 
+use Exception;
 use Throwable;
-use Traversable;
-use LogicException;
-use RuntimeException;
-use ForceUTF8\Encoding;
-use Bermuda\Iterator\StringIterator;
 
-final class _String implements IString
-{
-    private string $string;
-    private string $encoding;
-
-    public function __construct(string $string = '', string $encoding = null)
+final class _String
+{   
+    
+    /**
+     * @param string $subject
+     * @param string ...$segments
+     */
+    public static function prepend(string &$subject, string ...$segments): void
     {
-        $this->string = $string;
-        $this->encoding = $encoding ?? mb_internal_encoding();
-    }
-
-    public function copy(): IString
-    {
-        return new self($this->string, $this->encoding);
+        $subject = self::implode($segments, '') . $subject;
     }
 
     /**
+     * @param string $haystack
+     * @param string $glue
      * @return string
      */
-    public function __toString(): string
+    public static function implode(array $haystack, string $glue = ','): string
     {
-        return $this->string;
-    }
-
-    /**
-     * dump string and die
-     */
-    public function dd(): void
-    {
-        dd($this->string);
-    }
-
-    /**
-     * @param int $bytes
-     * @return IString
-     */
-    public function slice(int $bytes): IString
-    {
-        return $this->substring($bytes);
-    }
-
-    /**
-     * @param int $pos
-     * @param int|null $length
-     * @return IString
-     */
-    public function substring(int $pos, int $length = null): IString
-    {
-        $copy = clone $this;
-        $copy->string = mb_substr($this->string, $pos, $length);
-
-        return $copy;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return [$this];
-    }
-
-    /**
-     * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
-     */
-    public function getIterator(): StringIterator
-    {
-        return new StringIterator($this->string);
-    }
-
-    /**
-     * @return string
-     */
-    public function encoding(): string
-    {
-        return $this->encoding;
-    }
-
-    /**
-     * @param string $encoding
-     * @return Stringy
-     */
-    public function encode(string $encoding): IString
-    {
-        if (Str::equals($encoding, 'UTF-8', true)) {
-            $copy = clone $this;
-            $copy->string = Encoding::toUTF8($this->string);
-            $copy->encoding = 'UTF-8';
-
-            return $copy;
-        }
-
-        if (Str::equalsAny($encoding, ['ISO-8859-1', 'Windows-1251'], true)) {
-            $copy = clone $this;
-            $copy->string = Encoding::toWin1252($this->string);
-            $copy->encoding = 'ISO-8859-1';
-
-            return $copy;
-        }
-
-        if (!Str::equalsAny($encoding, mb_list_encodings())) {
-            throw new RuntimeException('Invalid encoding: ' . $encoding);
-        }
-
-        $copy = clone $this;
-        $copy->string = mb_convert_encoding($this->string, $encoding, $this->encoding);
-        $copy->encoding = $encoding;
-
-        return $copy;
-    }
-
-    /**
-     * @param string $delim
-     * @return IString[]|string[]
-     */
-    public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array
-    {
-        if ($asString) {
-            return explode($delim, $this->string, $limit);
-        }
-
-        return array_map(static function ($string) {
-            return new self($string, $this->encoding);
-        }, explode($delim, $this->string, $limit));
-    }
-
-    /**
-     * @return IString
-     */
-    public function ucFirst(): IString
-    {
-        $copy = clone $this;
-        $copy->string = ucfirst($this->string);
-
-        return $copy;
-    }
-
-    /**
-     * @param string $needle
-     * @param int $offset
-     * @param bool $caseInsensitive
-     * @return bool
-     */
-    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool
-    {
-        return $this->indexOf($needle, $offset, $caseInsensitive) !== null;
-    }
-
-    /**
-     * @param string $needle
-     * @param int $offset
-     * @param bool $caseInsensitive
-     * @return int|null
-     */
-    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false): ?int
-    {
-        if ($caseInsensitive) {
-            return @($i = mb_stripos($this->string, $needle, $offset)) !== false ? $i : null;
-        }
-
-        return @($i = mb_strpos($this->string, $needle, $offset)) !== false ? $i : null;
-    }
-
-    /**
-     * @param int $length
-     * @param string $substring
-     * @return Stringy
-     */
-    public function truncate(int $length = 200, string $substring = '...'): IString
-    {
-        return $this->start($length)->string .= $substring;
-    }
-
-    /**
-     * @param int $length
-     * @return IString
-     */
-    public function start(int $length): IString
-    {
-        return $this->substring(0, $length);
-    }
-
-    /**
-     * @return int
-     */
-    public function getBytes(): int
-    {
-        return strlen($this->string);
-    }
-
-    /**
-     * @param string $needle
-     * @param bool $requireNeedle
-     * @param bool $caseInsensitive
-     * @return IString|null
-     */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString
-    {
-        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null) {
-            return $this->start($requireNeedle ? $index + 1 : $index);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $needle
-     * @param bool $requireNeedle
-     * @param bool $caseInsensitive
-     * @return Stringy|null
-     */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false): ?IString
-    {
-        if (($index = $this->indexOf($needle, 0, $caseInsensitive)) !== null) {
-            return $this->substring($requireNeedle ? $index : $index + (new self($needle))->length());
-        }
-
-        return null;
-    }
-
-    /**
-     * @return int
-     */
-    public function length(): int
-    {
-        return mb_strlen($this->string);
-    }
-
-    /**
-     * @param string $algorithm
-     * @return static
-     */
-    public function hash(string $algorithm = 'sha512'): string
-    {
-        return hash($algorithm, $this->string);
-    }
-
-    /**
-     * @param string $charlist
-     * @return IString
-     */
-    public function trim(string $charlist = ' '): IString
-    {
-        $copy = clone $this;
-        $copy->string = trim($this->string, $charlist);
-
-        return $copy;
-    }
-
-    /**
-     * @param string $charlist
-     * @return IString
-     */
-    public function ltrim(string $charlist = ' '): IString
-    {
-        $copy = clone $this;
-        $copy->string = ltrim($this->string, $charlist);
-
-        return $copy;
-    }
-
-    /**
-     * @param string $charlist
-     * @return IString
-     */
-    public function rtrim(string $charlist = ' '): IString
-    {
-        $copy = clone $this;
-        $copy->string = rtrim($this->string, $charlist);
-
-        return $copy;
-    }
-
-    /**
-     * @param string|array $search
-     * @param string|array $replace
-     * @return IString
-     */
-    public function replace($search, $replace): IString
-    {
-        $copy = clone $this;
-        $copy->string = str_replace($search, $replace, $this);
-
-        return $copy;
-    }
-
-    /**
-     * @param string $string
-     * @return IString
-     */
-    public function append(string $string): IString
-    {
-        $copy = clone $this;
-        $copy->string .= $string;
-
-        return $copy;
-    }
-
-    /**
-     * @param string[] $subject
-     * @param bool $caseInsensitive
-     * @return bool
-     */
-    public function equalsAny(array $subject, bool $caseInsensitive = false): bool
-    {
-        return Str::equalsAny($this->string, $subject, $caseInsensitive);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return empty($this->string);
-    }
-
-    /**
-     * @param string $char
-     * @return IString
-     */
-    public function wrap(string $char): IString
-    {
-        return $this->prepend($char)->string .= $char;
-    }
-
-    /**
-     * @param string $string
-     * @return IString
-     */
-    public function prepend(string $string): IString
-    {
-        $copy = clone $this;
-        $copy->string = $string . $this->string;
-
-        return $copy;
-    }
-
-    /**
-     * @param string|null $char
-     * @return bool
-     */
-    public function isWrapped(string $char): bool
-    {
-        return ($char = new self($char))->first()->equals($char)
-            && $char->last()->equals($char);
+        return implode($glue, $haystack);
     }
 
     /**
      * @param string $subject
-     * @param bool $caseInsensitive
+     * @param string ...$segments
+     */
+    public static function append(string &$subject, string ...$segments): void
+    {
+        $subject .= self::implode($segments, '');
+    }
+
+    /**
+     * @param string $regexp
+     * @param string $subject
      * @return bool
      */
-    public function equals(string $subject, bool $caseInsensitive = false): bool
+    public static function match(string $regexp, string $subject): bool
     {
-        return Str::equals($this->string, $subject, $caseInsensitive);
+        return preg_match($regexp, $subject) == 1;
     }
 
     /**
-     * @return IString|null
+     * @param string $classname
+     * @return array
      */
-    public function first(): ?IString
+    public static function classname(string $classname): string
     {
-        return $this->index(0);
+        return self::classnameSplit($classname)[1];
     }
 
     /**
-     * @param int $index
-     * @return IString
-     * @throws RuntimeException
+     * @param string $classname
+     * @return array
      */
-    public function index(int $index): IString
+    public static function classnameSplit(string $classname): array
     {
-        if (!$this->has($index)) {
-            throw new RuntimeException('Invalid offset');
-        }
+        $result = explode('\\', $classname);
+        $classname = array_pop($result);
 
-        $copy = clone $this;
-        $copy->string = $this->string[$index];
-
-        return $copy;
-    }
-
-    /**
-     * @param int $index
-     * @return bool
-     */
-    public function has(int $index): bool
-    {
-        return abs($index) <= $this->lastIndex();
-    }
-
-    /**
-     * @return int
-     */
-    public function lastIndex(): ?int
-    {
-        if (($count = $this->length()) === 0) {
-            return null;
-        }
-
-        return $count - 1;
-    }
-
-    /**
-     * @return IString|null
-     */
-    public function last(): ?IString
-    {
-        return $this->index($this->lastIndex());
-    }
-
-    /**
-     * @param int $pos
-     * @return self[]
-     */
-    public function break(int $pos): array
-    {
-        return [$this->start($pos), $this->substring($pos)];
-    }
-
-    /**
-     * @param int $length
-     * @return IString
-     */
-    public function end(int $length): IString
-    {
-        return $this->substring(-$length = abs($length), $length);
-    }
-
-    /**
-     * @param string|string[] $pattern
-     * @param string|string[] $replacement
-     * @param int $limit
-     * @param int|null $count
-     * @return IString
-     */
-    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): IString
-    {
-        $copy = clone $this;
-        $copy->string = preg_replace($pattern, $replacement, $this->string, $limit, $count);
-
-        return $copy;
-    }
-
-    /**
-     * @param string $pattern
-     * @param array|null $matches
-     * @param int $flags
-     * @param int $offset
-     * @return bool
-     */
-    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
-    {
-        $match = @preg_match($pattern, $this->string, $matches, $flags, $offset) === 1;
-
-        if ($error = error_get_last()) {
-            throw new RuntimeException($error['message']);
-        }
-
-        return $match;
-    }
-
-    /**
-     * @param string $pattern
-     * @param array|null $matches
-     * @param int $flags
-     * @param int $offset
-     * @return bool
-     */
-    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
-    {
-        return preg_match_all($pattern, $this->string, $matches, $flags, $offset) === 1;
-    }
-
-    /**
-     * @return Stringy
-     */
-    public function revers(): IString
-    {
-        $copy = clone $this;
-        $copy->string = strrev($this->string);
-
-        return $copy;
-    }
-
-    /**
-     * @return Stringy
-     */
-    public function lcFirst(): IString
-    {
-        $copy = clone $this;
-        $copy->string = lcfirst($this->string);
-
-        return $copy;
+        return [implode('\\', $result), $classname];
     }
 
     /**
      * @param int $num
-     * @return Stringy
+     * @param bool $useSymbols
+     * @return string
      */
-    public function rand(int $num): IString
+    public static function uID(int $num = 6, string $prefix = '', string $suffix = ''): string
     {
-        $copy = clone $this;
-        $copy->string = Str::random($num, $this->string);
-
-        return $copy;
+        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($num))), 0, $num) . $suffix;
     }
 
     /**
-     * Write string
+     * @param int $num
+     * @param bool $useSymbols
+     * @return string
      */
-    public function write(): void
+    public static function password(int $length = 8, bool $useSymbols = true): string
     {
-        echo $this->string;
-    }
+        if ($useSymbols) {
+            if ($num < 3) {
+                return static::random($length);
+            }
 
-    /**
-     * @return int|null
-     */
-    public function firstIndex(): ?int
-    {
-        return $this->length() === 0 ? null : 0;
-    }
+            if ($num % 3 == 0) {
+                return static::random($length = $length / 3, static::numbers) .
+                    static::random($length, static::chars) .
+                    static::random($length, static::symbols);
+            }
 
-    /**
-     * @return static
-     */
-    public function shuffle(): IString
-    {
-        $copy = clone $this;
-        $copy->string = Str::shuffle($this->string);
+            $password = static::random($multi = ($round = ceil($length / 3)) * 2, static::numbers . static::chars)
+                . static::random($length - $multi, static::symbols);
 
-        return $copy;
-    }
-
-    /**
-     * @return static
-     */
-    public function toUpper(): IString
-    {
-        $copy = clone $this;
-        $copy->string = strtoupper($this->string);
-
-        return $copy;
-    }
-
-    /**
-     * @return static
-     */
-    public function toLower(): IString
-    {
-        $copy = clone $this;
-        $copy->string = strtolower($this->string);
-
-        return $copy;
-    }
-
-    /**
-     * @param int $length
-     * @return IString[]
-     */
-    public function split(int $length = 1): array
-    {
-        if ($length < 1) {
-            throw new LogicException('Argument [length] must be larger by zero');
+            return static::shuffle($password);
         }
 
-        $split = [];
+        return static::random($length, static::numbers . static::chars);
+    }
 
-        for ($count = $this->count(); $count > 0; $count -= $length) {
-            $split[] = $this->substring(-$count, $length);
+    /**
+     * @param int $num
+     * @param string|null $chars
+     * @return string
+     */
+    public static function random(int $length, ?string $chars = null): string
+    {
+        $chars = $chars ?? static::numbers . static::chars . static::symbols;
+        $max = strlen($chars) - 1;
+
+        $string = '';
+
+        while ($length--) {
+            $string .= $chars[random_int(0, $max)];
         }
 
-        return $split;
+        return $string;
     }
 
     /**
-     * @return int
+     * @param string $string
+     * @return string
+     * @throws Exception
      */
-    public function count(): int
+    public static function shuffle(string $string): string
     {
-        return $this->length();
+        $chars = str_split($string, 1);
+
+        usort($chars, static fn(): int => ($left = random_int(0, 100)) == ($right = random_int(0, 100))
+            ? 0 : ($left > $right ? 1 : -1)
+        );
+
+        return implode('', $chars);
     }
 
     /**
-     * @param mixed ... $args
-     * @return IString
-     * @throws RuntimeException
-     */
-    public function format(...$args): IString
-    {
-        $subject = @sprintf($this->string, ... $args);
-
-        if ($subject === false) {
-            throw new RuntimeException(error_get_last()['message']);
-        }
-
-        $copy = clone $this;
-        $copy->string = $subject;
-
-        return $copy;
-    }
-
-    /**
+     * @param string $content
      * @return bool
      */
-    public function isJson(): bool
+    public static function isJson(string $content): bool
+    {
+        return Json::isJson($content);
+    }
+
+    /**
+     * @param string $haystack
+     * @param string[] $needle
+     * @param bool $caseInsensitive
+     * @param int $offset
+     * @return bool
+     */
+    public static function containsAny(string $haystack, array $needle, bool $caseInsensitive = true, int $offset = 0): bool
+    {
+        foreach ($needle as $item) {
+            if (self::contains($haystack, $item, $caseInsensitive, $offset)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @param bool $caseInsensitive
+     * @param int $offset
+     * @return bool
+     */
+    public static function contains(string $haystack, string $needle, bool $caseInsensitive = true, int $offset = 0): bool
     {
         try {
-            json_decode($this->string, true, 512, JSON_THROW_ON_ERROR);
+            return ($caseInsensitive ? mb_stripos($haystack, $needle, $offset) :
+                    mb_strpos($haystack, $needle, $offset)) !== false;
         } catch (Throwable $e) {
             return false;
         }
-
-        return true;
     }
 
     /**
-     * @param int $options
-     * @return string
+     * @param string $haystack
+     * @param string $separator
+     * @param int $limit
+     * @return array
      */
-    public function toJson(int $options = 0): string
+    public static function explode(string $haystack, string $separator, int $limit = PHP_INT_MAX): array
     {
-        return json_encode($this->string, $options | JSON_THROW_ON_ERROR);
+        return explode($separator, $haystack, $limit);
     }
 
     /**
-     * Whether a offset exists
-     * @link https://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
+     * @param string $x
+     * @param string[] $any
+     * @param bool $caseInsensitive
+     * @return bool
      */
-    public function offsetExists($offset)
+    public static function equalsAny(string $x, array $any, bool $caseInsensitive = true): bool
     {
-        return (int)$offset > 0 && (int)$offset <= $this->count();
-    }
-
-    /**
-     * Offset to retrieve
-     * @link https://php.net/manual/en/arrayaccess.offsetget.php
-     * @param int|string $offset <p>
-     * The offset to retrieve.
-     * </p>
-     * @return mixed Can return all value types.
-     * @since 5.0.0
-     */
-    public function offsetGet($offset): IString
-    {
-        if (is_string($offset) && mb_strpos($offset, ':') !== false) {
-            list($start, $end) = explode(':', $offset, 2);
-            return $this->interval((int)$start, (int)$end);
+        foreach ($any as $string) {
+            if (static::equals($x, (string)$string, $caseInsensitive)) {
+                return true;
+            }
         }
 
-        return $this->index((int)$offset);
+        return false;
     }
 
     /**
+     * @param string $x
+     * @param string $y
+     * @param bool $caseInsensitive
+     * @return bool
+     */
+    public static function equals(string $x, string $y, bool $caseInsensitive = true): bool
+    {
+        return $caseInsensitive ? strcasecmp($x, $y) == 0 : strcmp($x, $y) == 0;
+    }
+
+    /**
+     * @param string $subject
+     * @param bool $multibyte
+     * @param string|null $encoding
+     * @return int
+     */
+    public static function length(string $subject, bool $multibyte = false, ?string $encoding = null): int
+    {
+        return $multibyte ? mb_strlen($subject, $encoding ?? mb_internal_encoding()) : strlen($subject);
+    }
+
+    /**
+     * @param string $input
      * @param int $start
      * @param int $end
-     * @return IString
+     * @return string
      */
-    public function interval(int $start, int $end): IString
+    public static function interval(string $input, int $start, int $end): string
     {
-        $copy = clone $this;
-        $copy->string = Str::interval($this->string, $start, $end);
+        for ($string = ''; $end >= $start; $start++) {
+            $string .= $input[$start];
+        }
 
-        return $copy;
+        return $string;
     }
 
-    /**
-     * Offset to set
-     * @link https://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param mixed $value <p>
-     * The value to set.
-     * </p>
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetSet($offset, $value)
+    public static function slice(string $subject, int $length): string
     {
-        throw new RuntimeException('Object: Bermuda\String\_String is immutable');
+        return substr($subject, $length);
     }
-
-    /**
-     * Offset to unset
-     * @link https://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
-    {
-        throw new RuntimeException('Object: Bermuda\String\_String is immutable');
-    }
+    
+    private const numbers = '0123456789';
+    private const symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
+    private const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 }
