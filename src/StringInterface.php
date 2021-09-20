@@ -2,55 +2,59 @@
 
 namespace Bermuda\String;
 
+use ArrayAccess;
 use Bermuda\Arrayable;
+use Countable;
+use IteratorAggregate;
 
-/**
- * interface StringInterface
- * @package Bermuda\String
- */
-interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, Arrayable, Jsonable, Stringable
+interface StringInterface extends IteratorAggregate, ArrayAccess, Countable, Arrayable, Jsonable, Stringable
 {
+
     /**
-     * dump string and die
+     * @return _StringInterface
      */
-    public function dd(): void ;
+    public function copy(): _StringInterface
+    
+    /**
+     * @param int $pos
+     * @param int|null $length
+     * @return _StringInterface
+     */
+    public function slice(int $pos, int $length = null): _StringInterface;
 
     /**
      * @return string
      */
-    public function encoding(): string ;
-    
-    public function slice(int $bytes): StringInterface ;
-   
-    /**
-     * @param string $encoding
-     * @return StringInterface
-     */
-    public function encode(string $encoding): StringInterface ;
+    public function getEncoding(): string;
 
     /**
-     * @param string $needle
-     * @param int $offset
-     * @param bool $caseInsensitive
-     * @return int|null
+     * @return bool
      */
-    public function indexOf(string $needle, int $offset = 0, bool $caseInsensitive = false):? int ;
-    
+    public function isMultibyte(): bool;
+
     /**
-     * @return StringInterface
+     * @param bool|null $mode
+     * @return _StringInterface|bool
      */
-    public function copy(): StringInterface ;
+    public function insensitive(bool $mode = null): _StringInterface|bool;
+
+    /**
+     * @param string $encoding
+     * @return _StringInterface
+     */
+    public function encode(string $encoding): _StringInterface;
 
     /**
      * @param string $delim
-     * @return StringInterface[]|string[]
+     * @param int $limit
+     * @return _StringInterface[]
      */
-    public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $asString = false): array ;
+    public function explode(string $delim = '/', int $limit = PHP_INT_MAX): array;
 
     /**
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function ucFirst(): StringInterface ;
+    public function ucfirst(): _StringInterface;
 
     /**
      * @param string $needle
@@ -58,178 +62,173 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @param bool $caseInsensitive
      * @return bool
      */
-    public function contains(string $needle, int $offset = 0, bool $caseInsensitive = false): bool ;
+    public function contains(string $needle, int $offset = 0): bool;
+
+    /**
+     * @param string $needle
+     * @param int $offset
+     * @return int|null
+     */
+    public function indexOf(string $needle, int $offset = 0): ?int;
 
     /**
      * @param int $length
-     * @param string $substring
-     * @return StringInterface
+     * @param string $end
+     * @return _StringInterface
      */
-    public function truncate(int $length = 200, string $substring = '...'): StringInterface ;
+    public function truncate(int $length = 200, string $end = '...'): _StringInterface;
+
+    /**
+     * @param int $length
+     * @return _StringInterface
+     */
+    public function start(int $length): _StringInterface;
 
     /**
      * @return int
      */
-    public function length(): int ;
-    
+    public function getBytes(): int;
+
+    /**
+     * @param string $needle
+     * @param bool $withNeedle
+     * @return _StringInterface|null
+     */
+    public function before(string $needle, bool $withNeedle = true): ?_StringInterface;
+
+    /**
+     * @param string $needle
+     * @param bool $withNeedle
+     * @return _StringInterface|null
+     */
+    public function after(string $needle, bool $withNeedle = true): ?_StringInterface;
+
     /**
      * @return int
      */
-    public function getBytes(): int ;
-
-    /**
-     * @param string $needle
-     * @param bool $requireNeedle
-     * @param bool $caseInsensitive
-     * @return StringInterface|null
-     */
-    public function before(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface ; 
-
-    /**
-     * @param string $needle
-     * @param bool $requireNeedle
-     * @param bool $caseInsensitive
-     * @return StringInterface|null
-     */
-    public function after(string $needle, bool $requireNeedle = true, bool $caseInsensitive = false):? StringInterface ;
+    public function length(): int;
 
     /**
      * @param string $algorithm
      * @return string
      */
-    public function hash(string $algorithm = 'sha512'): string ;
+    public function hash(string $algorithm = 'sha512'): string;
 
     /**
-     * @param string $charlist
-     * @return Stringy
+     * @param string $characters
+     * @return _StringInterface
      */
-    public function trim(string $charlist = ' '): StringInterface ;
+    public function trim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
 
     /**
-     * @param string $charlist
-     * @return StringInterface
+     * @param string $characters
+     * @return _StringInterface
      */
-    public function ltrim(string $charlist = ' '): StringInterface ;
+    public function ltrim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
 
     /**
-     * @param string $charlist
-     * @return StringInterface
+     * @param string $characters
+     * @return _StringInterface
      */
-    public function rtrim(string $charlist = ' '): StringInterface ;
+    public function rtrim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
 
     /**
-     * @param string|array $search
-     * @param string|array $replace
-     * @return StringInterface
+     * @param string|string[] $search
+     * @param string|string[] $replace
+     * @return _StringInterface
      */
-    public function replace($search, $replace): StringInterface ;
+    public function replace(string|array $search, string|array $replace): _StringInterface;
 
     /**
-     * @param string $subject
-     * @return StringInterface
+     * @param string $prefix
+     * @return _StringInterface
      */
-    public function prepend(string $subject): StringInterface ;
+    public function prepend(string $prefix): _StringInterface;
 
     /**
-     * @param string $subject
-     * @return StringInterface
+     * @param string $suffix
+     * @return _StringInterface
      */
-    public function append(string $subject): StringInterface ;
+    public function append(string $suffix): _StringInterface;
 
     /**
-     * @param string $subject
-     * @param bool $caseInsensitive
+     * @param string[]|string $needle
      * @return bool
      */
-    public function equals(string $subject, bool $caseInsensitive = false): bool ;
-
-    /**
-     * @param string[] $subject
-     * @param bool $caseInsensitive
-     * @return bool
-     */
-    public function equalsAny(array $subject, bool $caseInsensitive = false): bool ;
+    public function equals(array|string $needle): bool;
 
     /**
      * @return bool
      */
-    public function isEmpty(): bool ;
-    
-    /**
-     * @param int $index
-     * @return StringInterface
-     * @throws \RuntimeException
-     */
-    public function index(int $index): StringInterface ;
-
-    /**
-     * @param int $start
-     * @param int $end
-     * @return StringInterface
-     */
-    public function interval(int $start, int $end): StringInterface ; 
-
-    /**
-     * @param int $index
-     * @return bool
-     */
-    public function has(int $index): bool ;
-    
-    /**
-     * @return StringInterface|null
-     */
-    public function first():? StringInterface ;
-
-    /**
-     * @return StringInterface|null
-     */
-    public function last():? StringINterface ;
+    public function isEmpty(): bool;
 
     /**
      * @param string $char
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function wrap(string $char): StringInterface ;
-    
+    public function wrap(string $char): _StringInterface;
+
     /**
-     * @param string|null $char
+     * @param string $char
      * @return bool
      */
-    public function isWrapped(string $char): bool ;
-    
+    public function isWrapped(string $char): bool;
+
     /**
-     * @param int $pos
-     * @return StringInterface[]
+     * @return _StringInterface|null
      */
-    public function break(int $pos): array ;
+    public function first(): ?_StringInterface;
+
+    /**
+     * @param int $offset
+     * @return _StringInterface
+     * @throws RuntimeException
+     */
+    public function index(int $offset): _StringInterface;
+
+    /**
+     * @param string $start
+     * @param string $end
+     * @return _StringInterface|null
+     */
+    public function between(string $start, string $end): ?_StringInterface;
+
+    /**
+     * @param int $index
+     * @return bool
+     */
+    public function has(int $index): bool;
+
+    /**
+     * @return int|null
+     */
+    public function lastIndex(): ?int;
+
+    /**
+     * @return _StringInterface|null
+     */
+    public function last(): ?_StringInterface;
 
     /**
      * @param int $pos
-     * @param int|null $length
-     * @return StringInterface
+     * @return _StringInterface[]
      */
-    public function substring(int $pos, int $length = null): StringInterface ;
+    public function break(int $pos): array;
 
     /**
      * @param int $length
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function start(int $length): StringInterface ; 
-
-    /**
-     * @param int $length
-     * @return StringInterface
-     */
-    public function end(int $length): StringInterface ;
+    public function end(int $length): _StringInterface;
 
     /**
      * @param string|string[] $pattern
      * @param string|string[] $replacement
      * @param int $limit
      * @param int|null $count
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function pregReplace($pattern, $replacement, int $limit = -1, int &$count = null): StringInterface ; 
+    public function preplace(string|array $pattern, string|array $replacement, int $limit = -1, int &$count = null): _StringInterface;
 
     /**
      * @param string $pattern
@@ -238,7 +237,7 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @param int $offset
      * @return bool
      */
-    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool ;
+    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
 
     /**
      * @param string $pattern
@@ -247,69 +246,76 @@ interface StringInterface extends \IteratorAggregate, \ArrayAccess, \Countable, 
      * @param int $offset
      * @return bool
      */
-    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool ;
-    
-    /**
-     * @return StringInterface
-     */
-    public function revers(): StringInterface ;
+    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
 
     /**
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function lcFirst(): StringInterface ;
+    public function reverse(): _StringInterface;
 
     /**
-     * @param int $len
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function rand(int $len): StringInterface ;
+    public function lcfirst(): _StringInterface;
+
+    /**
+     * @param int $length
+     * @return _StringInterface
+     */
+    public function rand(int $length): _StringInterface;
 
     /**
      * Write string
      */
-    public function write(): void ;
-
-    /**
-     * @return int
-     */
-    public function lastIndex():? int ;
+    public function write(): void;
 
     /**
      * @return int|null
      */
-    public function firstIndex():? int ;
+    public function firstIndex(): ?int;
 
     /**
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function shuffle(): StringInterface ;
+    public function shuffle(): _StringInterface;
 
     /**
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function toUpper(): StringInterface ;
+    public function toUpper(): _StringInterface;
 
     /**
-     * @return StringInterface
+     * @return _StringInterface
      */
-    public function toLower(): StringInterface ; 
+    public function toLower(): _StringInterface;
+
+    /**
+     * @param string $chars
+     * @param int $length
+     * @return _StringInterface
+     */
+    public function pad(string $chars, int $length, int $mode = STR_PAD_BOTH): _StringInterface;
+
+    /**
+     * @param int $times
+     * @return _StringInterface
+     */
+    public function repeat(int $times): _StringInterface;
 
     /**
      * @param int $length
-     * @return StringInterface[]
+     * @return _StringInterface[]
      */
-    public function split(int $length = 1): array ;
+    public function split(int $length = 1): array;
 
     /**
-     * @param mixed ... $args
-     * @return StringInterface
-     * @throws \RuntimeException
+     * @param string ...$tokens
+     * @return _StringInterface
      */
-    public function format(... $args): StringInterface ;
+    public function format(string ...$tokens): _StringInterface;
 
     /**
      * @return bool
      */
-    public function isJson(): bool ;
+    public function isJson(): bool;
 }
