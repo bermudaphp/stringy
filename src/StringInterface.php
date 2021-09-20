@@ -9,7 +9,9 @@ use IteratorAggregate;
 
 interface StringInterface extends IteratorAggregate, ArrayAccess, Countable, Arrayable, Jsonable, Stringable
 {
-
+    public const TRIM_LEFT = -1;
+    public const TRIM_RIGHT = 1;
+    
     /**
      * @return _StringInterface
      */
@@ -116,21 +118,10 @@ interface StringInterface extends IteratorAggregate, ArrayAccess, Countable, Arr
 
     /**
      * @param string $characters
+     * @param int|null $mode
      * @return _StringInterface
      */
-    public function trim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
-
-    /**
-     * @param string $characters
-     * @return _StringInterface
-     */
-    public function ltrim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
-
-    /**
-     * @param string $characters
-     * @return _StringInterface
-     */
-    public function rtrim(string $characters = " \t\n\r\0\x0B"): _StringInterface;
+    public function trim(string $characters = " \t\n\r\0\x0B", ?int $mode = null): _StringInterface;
 
     /**
      * @param string|string[] $search
@@ -288,6 +279,12 @@ interface StringInterface extends IteratorAggregate, ArrayAccess, Countable, Arr
      * @return _StringInterface
      */
     public function toLower(): _StringInterface;
+    
+    /**
+     * @param callable $callback
+     * @return _StringInterface
+     */
+    public function transform(callable $callback): _StringInterface ;
 
     /**
      * @param string $chars
