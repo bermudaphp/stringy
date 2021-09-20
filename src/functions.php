@@ -11,21 +11,20 @@ use function mb_stripos;
 use function mb_strpos;
 use function mb_substr;
 
-function _string(string $text, ?string $encoding = null, ?bool $multibyte = null, bool $insensitive = false): _StringInterface
+function _string(string $text, ?string $encoding = null, bool $insensitive = false): _StringInterface
 {
-    return new class($text, $encoding, $multibyte, $insensitive) implements _StringInterface {
+    private bool $multibyte = false;
+    return new class($text, $encoding, $insensitive) implements _StringInterface {
         public function __construct(private string  $text = '',
                                     private ?string $encoding = null,
-                                    private bool    $multibyte = false,
                                     private bool    $insensitive = false)
         {
-            if ($encoding !== null) {
-                $this->text = Encoding::encode($encoding, $text);
-            } else {
+            if ($encoding === null) {
                 $this->encoding = (new EncodingDetector)->detectEncoding($text);
-            }
-
-            $this->multibyte = $multibyte ?? _String::isMultibyte($text);
+            } 
+            
+            $this->multibyte = _String::isMultibyte($text);
+            $this->text = Encoding::encode($this->encoding, $text);
         }
 
         public function copy(): _StringInterface
@@ -280,11 +279,10 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
          */
         public function replace(string|array $search, string|array $replace): _StringInterface
         {
-            $copy = clone $this;
-            $copy->text = $this->insensitive ? str_ireplace($search, $replace, $this->text)
+            $text = $this->insensitive ? str_ireplace($search, $replace, $this->text)
                 : str_replace($search, $replace, $this->text);
 
-            return $copy;
+            return new self($text, insensitive: $this->insensitive);
         }
 
         /**
@@ -293,10 +291,7 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
          */
         public function prepend(string $prefix): _StringInterface
         {
-            $copy = clone $this;
-            $copy->text = $prefix . $this->text;
-
-            return $copy;
+            return new self($prefix . $this->text, insensitive: $this->insensitive);
         }
 
         /**
@@ -305,10 +300,7 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
          */
         public function append(string $suffix): _StringInterface
         {
-            $copy = clone $this;
-            $copy->text .= $suffix;
-
-            return $copy;
+            return new self($this->text . $suffix, insensitive: $this->insensitive);
         }
 
         /**
@@ -334,10 +326,7 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
          */
         public function wrap(string $char): _StringInterface
         {
-            $copy = $this->prepend($char);
-            $copy->text .= $char;
-
-            return $copy;
+            return new self($char . $this->text . $suffix, insensitive: $this->insensitive);
         }
 
         /**
@@ -624,10 +613,7 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
          */
         public function format(string ...$tokens): _StringInterface
         {
-            $copy = clone $this;
-            $copy->text = sprintf($this->text, ... $tokens);
-
-            return $copy;
+            return new self(sprintf($this->text, ... $tokens), insensitive: $this->insensitive);
         }
 
         /**
