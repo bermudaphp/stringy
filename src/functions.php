@@ -2,12 +2,14 @@
 
 namespace Bermuda\String;
 
+use Bermuda\Iterator\StringIterator;
+use ForceUTF8\Encoding;
 use LogicException;
 use RuntimeException;
 use Traversable;
-use ForceUTF8\Encoding;
-use function {mb_stripos, mb_strpos, mb_substr};
-use Bermuda\Iterator\StringIterator;
+use function mb_stripos;
+use function mb_strpos;
+use function mb_substr;
 
 function _string(string $text, ?string $encoding = null, ?bool $multibyte = null, bool $insensitive = false): _StringInterface
 {
@@ -255,36 +257,18 @@ function _string(string $text, ?string $encoding = null, ?bool $multibyte = null
 
         /**
          * @param string $characters
+         * @param int|null $mode
          * @return _StringInterface
          */
-        public function trim(string $characters = " \t\n\r\0\x0B"): _StringInterface
+        public function trim(string $characters = " \t\n\r\0\x0B", ?int $mode = null): _StringInterface
         {
             $copy = clone $this;
-            $copy->text = trim($this->text, $characters);
 
-            return $copy;
-        }
-
-        /**
-         * @param string $characters
-         * @return _StringInterface
-         */
-        public function ltrim(string $characters = " \t\n\r\0\x0B"): _StringInterface
-        {
-            $copy = clone $this;
-            $copy->text = ltrim($this->text, $characters);
-
-            return $copy;
-        }
-
-        /**
-         * @param string $characters
-         * @return _StringInterface
-         */
-        public function rtrim(string $characters = " \t\n\r\0\x0B"): _StringInterface
-        {
-            $copy = clone $this;
-            $copy->text = rtrim($this->text, $characters);
+            $copy->text = match ($mode) {
+                self::TRIM_LEFT => ltrim($this->text, $characters),
+                self::TRIM_RIGHT => rtrim($this->text, $characters),
+                default => trim($this->text, $characters)
+            };
 
             return $copy;
         }
