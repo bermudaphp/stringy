@@ -13,16 +13,17 @@ use function mb_substr;
 
 function _string(string $text, ?string $encoding = null, bool $insensitive = false): _StringInterface
 {
-    private bool $multibyte = false;
     return new class($text, $encoding, $insensitive) implements _StringInterface {
+        private bool $multibyte = false;
+
         public function __construct(private string  $text = '',
                                     private ?string $encoding = null,
                                     private bool    $insensitive = false)
         {
             if ($encoding === null) {
                 $this->encoding = (new EncodingDetector)->detectEncoding($text);
-            } 
-            
+            }
+
             $this->multibyte = _String::isMultibyte($text);
             $this->text = Encoding::encode($this->encoding, $text);
         }
