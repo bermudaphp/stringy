@@ -252,7 +252,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function before(string $needle, bool $withNeedle = true): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
-                return $this->start($withNeedle ? $index + 1 : $index);
+                return $this->start($withNeedle ? $index + mb_strlen($needle, $this->encoding) : $index);
             }
 
             return null;
