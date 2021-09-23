@@ -26,6 +26,11 @@ final class StringHelper
     {
         return strlen($subject) !== mb_strlen($subject);
     }
+    
+    public static function bytesTo(int $bytes, int $precision = 2): string
+    {
+        return round(pow(1024, ($base = log($bytes, 1024)) - floor($base)), $precision) .' '. ['', 'KB', 'MB', 'GB', 'TB'][floor($base)];
+    }
 
     /**
      * @param string $subject
