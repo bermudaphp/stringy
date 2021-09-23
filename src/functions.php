@@ -613,6 +613,25 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
 
             return $copy;
         }
+        
+        /**
+         * @return _String
+         */
+        public function dasherize(): _String
+        {
+            return $this->delimit('_');
+        }
+
+        /**
+         * @param string $needle
+         * @param int $offset
+         * @param int|null $length
+         * @return int
+         */
+        public function countSubstring(string $needle, int $offset = 0, int $length = null): int
+        {
+            return substr_count($this->text, $needle, $offset, $length);
+        }
 
         /**
          * @return _String
