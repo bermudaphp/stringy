@@ -7,7 +7,7 @@ use Bermuda\Arrayable;
 use Countable;
 use IteratorAggregate;
 
-interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable
+interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, Stringable
 {
     public const TRIM_LEFT = 1;
     public const TRIM_RIGHT = 2;
