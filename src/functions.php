@@ -6,7 +6,6 @@ use Bermuda\Iterator\StringIterator;
 use ForceUTF8\Encoding;
 use LogicException;
 use RuntimeException;
-use Traversable;
 use function mb_stripos;
 use function mb_strpos;
 use function mb_substr;
