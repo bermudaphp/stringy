@@ -29,18 +29,13 @@ final class StringHelper
 
     /**
      * @param string $subject
-     * @param string $char
-     * @param bool $insensitive
      * @return bool
      */
-    public static function isWrapped(string $subject, string $char, bool $insensitive = true): bool
+    public static function isBool(string $subject): bool
     {
-        if (empty($subject)) {
-            return false;
-        }
-
-        return self::equals($subject[0], $char, $insensitive) &&
-            self::equals($subject[mb_strlen($subject) - 1], $char, $insensitive);
+        return self::equals($subject, [
+                '1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n'
+            ]) !== false;
     }
 
     /**
@@ -63,6 +58,22 @@ final class StringHelper
         }
 
         return false;
+    }
+
+    /**
+     * @param string $subject
+     * @param string $char
+     * @param bool $insensitive
+     * @return bool
+     */
+    public static function isWrapped(string $subject, string $char, bool $insensitive = true): bool
+    {
+        if (empty($subject)) {
+            return false;
+        }
+
+        return self::equals($subject[0], $char, $insensitive) &&
+            self::equals($subject[mb_strlen($subject) - 1], $char, $insensitive);
     }
 
     /**
@@ -271,12 +282,30 @@ final class StringHelper
 
     /**
      * @param string $pattern
+     * @param string $subject
      * @return bool
      */
     public static function mbMatch(string $pattern, string $subject): bool
     {
         $old = mb_regex_encoding();
+        mb_regex_encoding(self::detectEncoding($subject));
         $result = mb_ereg_match($pattern, $subject);
+        mb_regex_encoding($old);
+
+        return $result;
+    }
+
+    /**
+     * @param string $subject
+     * @param string $pattern
+     * @param string $replacement
+     * @return bool
+     */
+    public static function mbReplace(string $subject, string $pattern, string $replacement): bool
+    {
+        $old = mb_regex_encoding();
+        mb_regex_encoding(self::detectEncoding($subject));
+        $result = mb_ereg_replace($pattern, $replacement, $subject);
         mb_regex_encoding($old);
 
         return $result;
