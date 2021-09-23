@@ -11,7 +11,7 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
 {
     public const TRIM_LEFT = 1;
     public const TRIM_RIGHT = 2;
-    
+
     /**
      * @return string
      */
@@ -28,7 +28,39 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      */
     public function insensitive(bool $mode = null): _String|bool;
 
+    /**
+     * @return _String
+     */
     public function copy(): _String;
+
+    /**
+     * @param callable $callback
+     * @return _String
+     */
+    public function transform(callable $callback): _String;
+
+    /**
+     * @return _String
+     */
+    public function underscored(): _String;
+
+    /**
+     * @return _String
+     */
+    public function dasherize(): _String;
+
+    /**
+     * @param string $needle
+     * @return int
+     */
+    public function countSubstring(string $needle): int;
+
+    /**
+     * @param $delimiter
+     * @return _String
+     */
+    public function delimit($delimiter): _String;
+
 
     /**
      * @param string $encoding
