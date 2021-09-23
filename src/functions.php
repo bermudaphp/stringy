@@ -3,16 +3,11 @@
 namespace Bermuda\String;
 
 use Bermuda\Iterator\StringIterator;
-use Bermuda\String\StringHelper as Helper;
+use ForceUTF8\Encoding;
 use LogicException;
 use RuntimeException;
-use Traversable;
-use function mb_ereg_replace;
 use function mb_stripos;
-use function mb_strlen;
 use function mb_strpos;
-use function mb_strtolower;
-use function mb_strtoupper;
 use function mb_substr;
 
 function _string(string $text, ?string $encoding = null, bool $insensitive = false): _String
@@ -64,7 +59,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         }
 
         /**
-         * @return array
+         * @return _String[]
          */
         public function toArray(): array
         {
@@ -72,11 +67,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         }
 
         /**
-         * Retrieve an external iterator
-         * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
-         * @return Traversable An instance of an object implementing <b>Iterator</b> or
-         * <b>Traversable</b>
-         * @since 5.0.0
+         * @return StringIterator
          */
         public function getIterator(): StringIterator
         {
@@ -97,6 +88,23 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function isMultibyte(): bool
         {
             return $this->multibyte;
+        }
+
+        public function isBool(): bool
+        {
+            return Helper::isBool($this->text);
+        }
+
+        /**
+         * @return bool
+         */
+        public function toBoolean(): bool
+        {
+            if ($this->equals(['on', 'y', 'yes', '1'])) {
+                return true;
+            }
+
+            return false;
         }
 
         /**
@@ -405,7 +413,13 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
                 return null;
             }
 
-            return $this->slice($start, abs((int)$this->indexOf($end) - $index));
+            $endIndex = ($substring = $this->slice($index + mb_strlen($start)))->indexOf($end);
+
+            if ($endIndex !== null) {
+                return $substring->slice(0, $endIndex);
+            }
+
+            return $substring;
         }
 
         /**
@@ -557,6 +571,45 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         {
             $copy = clone $this;
             $copy->text = StringHelper::shuffle($this->text);
+
+            return $copy;
+        }
+
+        /**
+         * @param callable $callback
+         * @return _String
+         */
+        public function transform(callable $callback): _String
+        {
+            $copy = clone $this;
+            $copy->text = (string)$callback($this);
+
+            return $copy;
+        }
+
+        /**
+         * @return _String
+         */
+        public function underscored(): _String
+        {
+            return $this->delimit('_');
+        }
+
+        /**
+         * @param $delimiter
+         * @return _String
+         */
+        public function delimit($delimiter): _String
+        {
+            $copy = clone $this;
+
+            $old = mb_regex_encoding();
+            mb_regex_encoding($this->encoding);
+
+            $copy->text = mb_ereg_replace('\B([A-Z])', '-\1', $this->trim());
+            $copy->text = mb_ereg_replace('[-_\s]+', $delimiter, mb_strtolower($copy->text));
+
+            mb_regex_encoding($old);
 
             return $copy;
         }
@@ -786,7 +839,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function swapCase(): _String
         {
             $copy = clone $this;
-            $copy->title = preg_replace_callback(
+            $copy->text = preg_replace_callback(
                 '/[\S]/u',
                 static function ($match) use ($copy) {
                     if ($match[0] == mb_strtoupper($match[0], $copy->encoding)) {
@@ -802,7 +855,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         }
 
         /**
-         * @param string|null $ignore
+         * @param string|array|null $ignore
          * @return _String
          */
         public function titleize(string|array $ignore = null): _String
@@ -817,7 +870,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
                         return $match[0];
                     }
 
-                    return (string)$copy->toLowerCase()->upperCaseFirst();
+                    return ucfirst(strtolower($match[0]));
                 },
                 $this->text
             );
@@ -979,17 +1032,3 @@ function _encode(string $encoding, string $text, $insensitive = false): _String
 {
     return _string($text, insensitive: $insensitive)->encode($encoding);
 }
-
-/**
- * @param string $haystack
- * @param string|string[] $needle
- * @param bool $insensitive
- * @param int $offset
- * @return bool
- */
-function str_contains(string $haystack, string|array $needle, bool $insensitive = false, int $offset = 0): bool
-{
-    return Helper::contains($haystack, $needle, $insensitive, $offset);
-}
-
-
