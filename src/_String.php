@@ -127,14 +127,14 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      * @param bool $withNeedle
      * @return _String|null
      */
-    public function before(string $needle, bool $withNeedle = true): ?_String;
+    public function before(string $needle, bool $withNeedle = false): ?_String;
 
     /**
      * @param string $needle
      * @param bool $withNeedle
      * @return _String|null
      */
-    public function after(string $needle, bool $withNeedle = true): ?_String;
+    public function after(string $needle, bool $withNeedle = false): ?_String;
 
     /**
      * @param string $algorithm
