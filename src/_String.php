@@ -63,7 +63,6 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      */
     public function delimit($delimiter): _String;
 
-
     /**
      * @param string $encoding
      * @return _String
