@@ -7,7 +7,6 @@ use Bermuda\String\StringHelper as Helper;
 use LogicException;
 use RuntimeException;
 use Traversable;
-use function mb_ereg_match;
 use function mb_ereg_replace;
 use function mb_stripos;
 use function mb_strlen;
@@ -474,7 +473,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
         {
-            $matched = @preg_match($pattern, $this->subject, $matches, $flags, $offset) === 1;
+            $matched = @preg_match($pattern, $this->text, $matches, $flags, $offset) === 1;
 
             if ($error = error_get_last()) {
                 throw new RuntimeException($error['message']);
@@ -492,7 +491,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
         {
-            $matched = @preg_match_all($pattern, $this->subject, $matches, $flags, $offset) === 1;
+            $matched = @preg_match_all($pattern, $this->text, $matches, $flags, $offset) === 1;
 
             if ($error = error_get_last()) {
                 throw new RuntimeException($error['message']);
@@ -518,7 +517,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function lowerCaseFirst(): _String
         {
             $copy = clone $this;
-            $copy->text = lcfirst($this->subject);
+            $copy->text = lcfirst($this->text);
 
             return $copy;
         }
@@ -639,11 +638,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function mbMatch(string $pattern): bool
         {
-            $old = mb_regex_encoding();
-            $result = mb_ereg_match($pattern, $this->text);
-            mb_regex_encoding($old);
-
-            return $result;
+            return Helper::mbMatch($pattern, $this->text);
         }
 
         /**
@@ -715,7 +710,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isAlpha(): bool
         {
-            return $this->mbMatch('^[[:alpha:]]*$');
+            return Helper::isAlpha($this->text);
         }
 
         /**
@@ -723,7 +718,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isAlphanumeric(): bool
         {
-            return $this->mbMatch('^[[:alnum:]]*$');
+            return Helper::isAlphanumeric($this->text);
         }
 
         /**
@@ -731,7 +726,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isBlank(): bool
         {
-            return $this->mbMatch('^[[:space:]]*$');
+            return Helper::isBlank($this->text);
         }
 
         /**
@@ -739,7 +734,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isHexadecimal(): bool
         {
-            return $this->mbMatch('^[[:xdigit:]]*$');
+            return Helper::isHexadecimal($this->text);
         }
 
         /**
@@ -747,7 +742,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isLowerCase(): bool
         {
-            return $this->mbMatch('^[[:lower:]]*$');
+            return Helper::isLowerCase($this->text);
         }
 
         /**
@@ -755,7 +750,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isSerialized(): bool
         {
-            return $this->text === 'b:0;' || @unserialize($this->text) !== false;
+            return Helper::isSerialized($this->text);
         }
 
         /**
@@ -763,7 +758,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isBase64(): bool
         {
-            return (base64_encode(base64_decode($this->text, true)) === $this->text);
+            return Helper::isBase64($this->text);
         }
 
         /**
@@ -771,7 +766,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function isUpperCase(): bool
         {
-            return $this->mbMatch('^[[:upper:]]*$');
+            return Helper::isUpperCase($this->text);
         }
 
         /**
@@ -978,7 +973,6 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
             throw new RuntimeException('Object is immutable');
         }
     };
-
 }
 
 function _encode(string $encoding, string $text, $insensitive = false): _String
