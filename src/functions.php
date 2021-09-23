@@ -165,8 +165,8 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function contains(string|array $needle, int $offset = 0): bool
         {
-            is_array($needle) ?: $needle = [$offset => $needle];
-            foreach ($needle as $offset => $value) {
+            is_array($needle) ?: $needle = [$needle];
+            foreach ($needle as $value) {
                 if ($this->indexOf($value, $offset) !== null) {
                     return true;
                 }
@@ -184,7 +184,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         {
             is_array($needle) ?: $needle = [$needle];
             foreach ($needle as $value) {
-                if (!$this->indexOf($value, $offset) !== null) {
+                if (!$this->indexOf($value, $offset) === null) {
                     return false;
                 }
             }
