@@ -2,10 +2,6 @@
 
 namespace Bermuda\String;
 
-/**
- * interface Jsonable
- * @package Bermuda\String
- */
 interface Jsonable
 {
     /**
