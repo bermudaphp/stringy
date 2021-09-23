@@ -14,7 +14,7 @@ final class Json
     public static function encode($content, int $flags = 0, int $depth = 512): string
     {
         if ($content instanceof Jsonable) {
-            return $content->toJson($flags);
+            return $content->toJson($flags, $depth);
         }
 
         return json_encode($content, $flags | JSON_THROW_ON_ERROR, $depth);
