@@ -2,236 +2,436 @@
 
 namespace Bermuda\String;
 
-use Exception;
-use Throwable;
+use ArrayAccess;
+use Bermuda\Arrayable;
+use Countable;
+use IteratorAggregate;
 
-final class _String
-{   
+interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable
+{
+    public const TRIM_LEFT = 1;
+    public const TRIM_RIGHT = 2;
+    
     /**
-     * @param string $subject
-     * @param string ...$segments
-     */
-    public static function prepend(string &$subject, string ...$segments): void
-    {
-        $subject = self::implode($segments, '') . $subject;
-    }
-
-    /**
-     * @param string $haystack
-     * @param string $glue
      * @return string
      */
-    public static function implode(array $haystack, string $glue = ','): string
-    {
-        return implode($glue, $haystack);
-    }
+    public function getEncoding(): string;
 
     /**
-     * @param string $subject
-     * @param string ...$segments
-     */
-    public static function append(string &$subject, string ...$segments): void
-    {
-        $subject .= self::implode($segments, '');
-    }
-
-    /**
-     * @param string $regexp
-     * @param string $subject
      * @return bool
      */
-    public static function match(string $regexp, string $subject): bool
-    {
-        return preg_match($regexp, $subject) == 1;
-    }
+    public function isMultibyte(): bool;
 
     /**
-     * @param int $length
-     * @param bool $useSymbols
-     * @return string
+     * @param bool|null $mode
+     * @return _String|bool
      */
-    public static function uID(int $length = 6, string $prefix = '', string $suffix = ''): string
-    {
-        return $prefix.substr(bin2hex(random_bytes(ceil($length))), 0, $length).$suffix;
-    }
+    public function insensitive(bool $mode = null): _String|bool;
+
+    public function copy(): _String;
 
     /**
-     * @param int $length
-     * @param bool $useSymbols
-     * @return string
+     * @param string $encoding
+     * @return _String
      */
-    public static function password(int $length = 8, bool $useSymbols = true): string
-    {
-        if ($useSymbols) {
-            if ($num < 3) {
-                return static::random($length);
-            }
-
-            if ($num % 3 == 0) {
-                return static::random($length = $length / 3, static::numbers) .
-                    static::random($length, static::chars) .
-                    static::random($length, static::symbols);
-            }
-
-            $password = static::random($multi = ($round = ceil($length / 3)) * 2, static::numbers . static::chars)
-                . static::random($length - $multi, static::symbols);
-
-            return static::shuffle($password);
-        }
-
-        return static::random($length, static::numbers . static::chars);
-    }
+    public function encode(string $encoding): _String;
 
     /**
-     * @param int $length
-     * @param string|null $chars
-     * @return string
-     */
-    public static function random(int $length, ?string $chars = null): string
-    {
-        $chars = $chars ?? static::numbers . static::chars . static::symbols;
-        $max = strlen($chars) - 1;
-
-        $string = '';
-
-        while ($length--) {
-            $string .= $chars[random_int(0, $max)];
-        }
-
-        return $string;
-    }
-
-    /**
-     * @param string $string
-     * @return string
-     * @throws Exception
-     */
-    public static function shuffle(string $string): string
-    {
-        $chars = str_split($string, 1);
-
-        usort($chars, static fn(): int => ($left = random_int(0, 100)) == ($right = random_int(0, 100))
-            ? 0 : ($left > $right ? 1 : -1)
-        );
-
-        return implode('', $chars);
-    }
-
-    /**
-     * @param string $content
-     * @return bool
-     */
-    public static function isJson(string $content): bool
-    {
-        return Json::isJson($content);
-    }
-
-    /**
-     * @param string $haystack
-     * @param string[] $needle
-     * @param bool $caseInsensitive
-     * @param int $offset
-     * @return bool
-     */
-    public static function containsAny(string $haystack, array $needle, bool $caseInsensitive = true, int $offset = 0): bool
-    {
-        foreach ($needle as $item) {
-            if (self::contains($haystack, $item, $caseInsensitive, $offset)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $haystack
-     * @param string $needle
-     * @param bool $caseInsensitive
-     * @param int $offset
-     * @return bool
-     */
-    public static function contains(string $haystack, string $needle, bool $caseInsensitive = true, int $offset = 0): bool
-    {
-        try {
-            return ($caseInsensitive ? mb_stripos($haystack, $needle, $offset) :
-                    mb_strpos($haystack, $needle, $offset)) !== false;
-        } catch (Throwable $e) {
-            return false;
-        }
-    }
-
-    /**
-     * @param string $haystack
-     * @param string $separator
+     * @param string $delim
      * @param int $limit
-     * @return array
+     * @return _String[]
      */
-    public static function explode(string $haystack, string $separator, int $limit = PHP_INT_MAX): array
-    {
-        return explode($separator, $haystack, $limit);
-    }
+    public function explode(string $delim = '/', int $limit = PHP_INT_MAX): array;
 
     /**
-     * @param string $x
-     * @param string[] $any
-     * @param bool $caseInsensitive
+     * @param string|string[] $needle
+     * @param int $offset
      * @return bool
      */
-    public static function equalsAny(string $x, array $any, bool $caseInsensitive = true): bool
-    {
-        foreach ($any as $string) {
-            if (static::equals($x, (string)$string, $caseInsensitive)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public function contains(string|array $needle, int $offset = 0): bool;
 
     /**
-     * @param string $x
-     * @param string $y
-     * @param bool $caseInsensitive
+     * @param string $needle
+     * @param int $offset
+     * @return int|null
+     */
+    public function indexOf(string $needle, int $offset = 0): ?int;
+
+    /**
+     * @param string|string[] $needle
+     * @param int $offset
      * @return bool
      */
-    public static function equals(string $x, string $y, bool $caseInsensitive = true): bool
-    {
-        return $caseInsensitive ? strcasecmp($x, $y) == 0 : strcmp($x, $y) == 0;
-    }
+    public function containsAll(string|array $needle, int $offset = 0): bool;
 
     /**
-     * @param string $subject
-     * @param bool $multibyte
-     * @param string|null $encoding
+     * @param int $length
+     * @param string $end
+     * @return _String
+     */
+    public function truncate(int $length = 200, string $end = '...'): _String;
+
+    /**
+     * @param int $length
+     * @return _String
+     */
+    public function start(int $length): _String;
+
+    /**
+     * @param int $pos
+     * @param int|null $length
+     * @return _String
+     */
+    public function slice(int $pos, int $length = null): _String;
+
+    /**
      * @return int
      */
-    public static function length(string $subject, bool $multibyte = false, ?string $encoding = null): int
-    {
-        return $multibyte ? mb_strlen($subject, $encoding ?? mb_internal_encoding()) : strlen($subject);
-    }
+    public function getBytes(): int;
 
     /**
-     * @param string $input
-     * @param int $start
-     * @param int $end
+     * @param string $needle
+     * @param bool $withNeedle
+     * @return _String|null
+     */
+    public function before(string $needle, bool $withNeedle = true): ?_String;
+
+    /**
+     * @param string $needle
+     * @param bool $withNeedle
+     * @return _String|null
+     */
+    public function after(string $needle, bool $withNeedle = true): ?_String;
+
+    /**
+     * @param string $algorithm
      * @return string
      */
-    public static function interval(string $input, int $start, int $end): string
-    {
-        for ($string = ''; $end >= $start; $start++) {
-            $string .= $input[$start];
-        }
+    public function hash(string $algorithm = 'sha512'): string;
 
-        return $string;
-    }
+    /**
+     * @param string|string[] $search
+     * @param string|string[] $replace
+     * @return _String
+     */
+    public function replace(string|array $search, string|array $replace): _String;
 
-    public static function slice(string $subject, int $length): string
-    {
-        return substr($subject, $length);
-    }
-    
-    private const numbers = '0123456789';
-    private const symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
-    private const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    /**
+     * @param string $prefix
+     * @return _String
+     */
+    public function prepend(string $prefix): _String;
+
+    /**
+     * @param string $suffix
+     * @return _String
+     */
+    public function append(string $suffix): _String;
+
+    /**
+     * @param string $char
+     * @return _String
+     */
+    public function wrap(string $char): _String;
+
+    /**
+     * @param string $char
+     * @return bool
+     */
+    public function isWrapped(string $char): bool;
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool;
+
+    /**
+     * @return int|null
+     */
+    public function lastIndex(): ?int;
+
+    /**
+     * @return int
+     */
+    public function length(): int;
+
+    /**
+     * @return _String|null
+     */
+    public function first(): ?_String;
+
+    /**
+     * @param int $offset
+     * @return _String
+     */
+    public function index(int $offset): _String;
+
+    /**
+     * @param int $index
+     * @return bool
+     */
+    public function has(int $index): bool;
+
+    /**
+     * @param string $start
+     * @param string $end
+     * @return _String|null
+     */
+    public function between(string $start, string $end): ?_String;
+
+    /**
+     * @return _String|null
+     */
+    public function last(): ?_String;
+
+    /**
+     * @param int $pos
+     * @return _String[]
+     */
+    public function break(int $pos): array;
+
+    /**
+     * @param string|string[] $pattern
+     * @param string|string[] $replacement
+     * @param int $limit
+     * @param int|null $count
+     * @return _String
+     */
+    public function pregReplace(string|array $pattern, string|array $replacement, int $limit = -1, int &$count = null): _String;
+
+    /**
+     * @param string $pattern
+     * @param array|null $matches
+     * @param int $flags
+     * @param int $offset
+     * @return bool
+     */
+    public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
+
+    /**
+     * @param string $pattern
+     * @param array|null $matches
+     * @param int $flags
+     * @param int $offset
+     * @return bool
+     */
+    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
+
+    /**
+     * @return _String
+     */
+    public function reverse(): _String;
+
+    /**
+     * @return _String
+     */
+    public function lowerCaseFirst(): _String;
+
+    /**
+     * @param int $length
+     * @return _String
+     */
+    public function rand(int $length): _String;
+
+    /**
+     * Write string
+     */
+    public function write(): void;
+
+    /**
+     * @return int|null
+     */
+    public function firstIndex(): ?int;
+
+    /**
+     * @return _String
+     */
+    public function shuffle(): _String;
+
+    /**
+     * @return _String
+     */
+    public function toUpperCase(): _String;
+
+    /**
+     * @param string $chars
+     * @param int $length
+     * @param int $mode
+     * @return _String
+     */
+    public function pad(string $chars, int $length, int $mode = STR_PAD_BOTH): _String;
+
+    /**
+     * @param int $times
+     * @return _String
+     */
+    public function repeat(int $times): _String;
+
+    /**
+     * @param int $length
+     * @return _String[]
+     */
+    public function split(int $length = 1): array;
+
+    /**
+     * @param int $tabLength
+     * @return mixed
+     */
+    public function toSpaces(int $tabLength = 4): _String;
+
+    /**
+     * @param string|string[] $needle
+     * @return bool
+     */
+    public function endsWith(string|array $needle): bool;
+
+    /**
+     * @param string[]|string $needle
+     * @return bool
+     */
+    public function equals(array|string $needle): bool;
+
+    /**
+     * @param int $length
+     * @return _String
+     */
+    public function end(int $length): _String;
+
+    /**
+     * @param string $substring
+     * @return _String
+     */
+    public function removeLeft(string $substring): _String;
+
+    /**
+     * @param string $characters
+     * @param int|null $mode
+     * @return _String
+     */
+    public function trim(string $characters = " \t\n\r\0\x0B", ?int $mode = null): _String;
+
+    /**
+     * @param string $substring
+     * @return _String
+     */
+    public function removeRight(string $substring): _String;
+
+    /**
+     * @param string|array $needle
+     * @return bool
+     */
+    public function startsWith(string|array $needle): bool;
+
+    /**
+     * @return bool
+     */
+    public function isAlpha(): bool;
+
+    /**
+     * @param string $pattern
+     * @return bool
+     */
+    public function mbMatch(string $pattern): bool;
+
+    /**
+     * @return bool
+     */
+    public function isAlphanumeric(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isBlank(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isHexadecimal(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isLowerCase(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isSerialized(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isBase64(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isUpperCase(): bool;
+
+    /**
+     * @return _String
+     */
+    public function stripWhitespace(): _String;
+
+    /**
+     * @return _String
+     */
+    public function swapCase(): _String;
+
+    /**
+     * @param string|null $ignore
+     * @return _String
+     */
+    public function titleize(string|array $ignore = null): _String;
+
+    /**
+     * @return _String
+     */
+    public function upperCaseFirst(): _String;
+
+    /**
+     * @return _String
+     */
+    public function toLowerCase(): _String;
+
+    /**
+     * @param int $tabLength
+     * @return _String
+     */
+    public function toTabs(int $tabLength = 4): _String;
+
+    /**
+     * @return _String
+     */
+    public function toTitleCase(): _String;
+
+    /**
+     * @param int|null $mode
+     * @return _String
+     */
+    public function convertCase(int $mode = null): _String;
+
+    /**
+     * @param string ...$tokens
+     * @return _String
+     */
+    public function format(string ...$tokens): _String;
+
+    /**
+     * @return bool
+     */
+    public function isJson(): bool;
+
+    /**
+     * @param int $options
+     * @return string
+     */
+    public function toJson(int $options = 0): string;
+
+    /**
+     * @param int $start
+     * @param int $end
+     * @return _String
+     */
+    public function interval(int $start, int $end): _String;
 }
