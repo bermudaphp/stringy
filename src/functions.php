@@ -249,7 +249,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          * @param bool $withNeedle
          * @return _String|null
          */
-        public function before(string $needle, bool $withNeedle = true): ?_String
+        public function before(string $needle, bool $withNeedle = false): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
                 return $this->start($withNeedle ? $index + mb_strlen($needle, $this->encoding) : $index);
@@ -263,7 +263,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          * @param bool $withNeedle
          * @return _String|null
          */
-        public function after(string $needle, bool $withNeedle = true): ?_String
+        public function after(string $needle, bool $withNeedle = false): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
                 return $this->slice($withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
