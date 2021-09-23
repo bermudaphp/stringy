@@ -81,7 +81,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function getIterator(): StringIterator
         {
-            return new StringIterator($this->subject);
+            return new StringIterator($this->text);
         }
 
         /**
