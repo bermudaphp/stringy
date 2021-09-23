@@ -1031,5 +1031,5 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
 
 function _encode(string $encoding, string $text, $insensitive = false): _String
 {
-    return \Bermuda\String\_string($text, insensitive: $insensitive)->encode($encoding);
+    return _string($text, insensitive: $insensitive)->encode($encoding);
 }
