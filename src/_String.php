@@ -51,9 +51,11 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
 
     /**
      * @param string $needle
+     * @param int $offset
+     * @param int|null $length
      * @return int
      */
-    public function countSubstring(string $needle): int;
+    public function countSubstring(string $needle, int $offset = 0, int $length = null): int;
 
     /**
      * @param $delimiter
