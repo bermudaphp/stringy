@@ -620,10 +620,10 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         }
 
         /**
-         * @param $delimiter
+         * @param string $delimiter
          * @return _String
          */
-        public function delimit($delimiter): _String
+        public function delimit(string $delimiter): _String
         {
             $copy = clone $this;
 
