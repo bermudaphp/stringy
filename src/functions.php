@@ -106,6 +106,30 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
 
             return false;
         }
+        
+        /**
+         * @param string $var
+         * @return bool
+         */
+        public static function isDate(string $var): bool
+        {
+            try {
+                new \DateTime($var);
+                return true;
+            } catch (\Throwable $e) {
+                return false;
+            }
+        }
+        
+        /**
+         * @param \DateTimeZone|null $tz
+         * @return \DateTimeInterface
+         * @throws \Exception
+         */
+        public function toDate(\DateTimeZone $tz = null): \DateTimeInterface
+        {
+            return new \DateTimeImmutable($this->text, $tz);
+        }
 
         /**
          * @param bool|null $mode
