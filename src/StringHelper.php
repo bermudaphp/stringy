@@ -228,6 +228,20 @@ final class StringHelper
     {
         return Json::isJson($content);
     }
+    
+    /**
+     * @param string $var
+     * @return bool
+     */
+    public static function isDate(string $var): bool
+    {
+        try {
+            new \DateTime($var);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 
     /**
      * @param string $haystack
