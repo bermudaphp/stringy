@@ -30,6 +30,8 @@ final class _Class
      */
     public static function split(string $cls): array
     {
-        return [implode(self::separator, $segments = explode(self::separator, $classname)), array_pop($segments)];
+        $segments = explode(self::separator, $cls);
+        $cls = array_pop($segments);
+        return [implode(self::separator, $segments), $cls];
     }
 }
