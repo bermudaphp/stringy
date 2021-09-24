@@ -370,6 +370,11 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      * @return bool
      */
     public function isAlphanumeric(): bool;
+    
+    /**
+     * @return bool
+     */
+    public function isDate(): bool;
 
     /**
      * @return bool
@@ -460,6 +465,11 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      * @return string
      */
     public function toJson(int $options = 0): string;
+    
+    /**
+     * @return bool
+     */
+    public function toDate(\DateTimeZone $tz = null): \DateTimeInterface;
 
     /**
      * @param int $start
