@@ -75,6 +75,9 @@ interface _String extends Arrayable, IteratorAggregate, ArrayAccess, Countable, 
      * @return _String[]
      */
     public function explode(string $delim = '/', int $limit = PHP_INT_MAX): array;
+    
+    public function isNumeric(): bool ;
+    public function toNumber(): int|float ;
 
     /**
      * @param string|string[] $needle
