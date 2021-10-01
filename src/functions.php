@@ -290,7 +290,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function after(string $needle, bool $withNeedle = false): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
-                return $this->slice($withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
+                return $this->slice(!$withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
             }
 
             return null;
@@ -1071,7 +1071,118 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
     };
 }
 
-function _encode(string $encoding, string $text, $insensitive = false): _String
+function _encode(string $encoding, string $text, bool $insensitive = false): _String
 {
     return _string($text, insensitive: $insensitive)->encode($encoding);
+}
+
+/**
+ * @param string $haystack
+ * @param string|string[] $needle
+ * @param bool $insensitive
+ * @return bool
+ */
+function str_starts_with(string $haystack, string|array $needle, bool $insensitive = false): bool
+{
+    $callback = $insensitive ? 'strncasecmp' : 'strncmp';
+    foreach (is_array($needle) ? $needle : [$needle] as $value) {
+        if ($callback($haystack, $value, mb_strlen($value)) === 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param string $haystack
+ * @param string|string[] $needle
+ * @param bool $insensitive
+ * @return bool
+ */
+function str_ends_with(string $haystack, string|array $needle, bool $insensitive = false): bool
+{
+    return str_starts_with(strrev($haystack), array_map('strrev', is_array($needle) ? $needle : [$needle]), $insensitive);
+}
+
+/**
+ * @param string $subject
+ * @param int $length
+ * @return string
+ */
+function str_slice(string $subject, int $length): string
+{
+    return substr($subject, 0, $length);
+}
+
+/**
+ * @param string $haystack
+ * @param string|string[] $needle
+ * @param int $offset
+ * @param bool $insensitive
+ * @return bool
+ */
+function str_contains(string $haystack, string|array $needle, int $offset = 0, bool $insensitive = false): bool
+{
+    $callback = $insensitive ? 'stripos' : 'strpos';
+    foreach (is_array($needle) ? $needle : [$needle] as $value) {
+        if ($callback($haystack, $value, $offset) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param string $haystack
+ * @param string|string[] $needle
+ * @param int $offset
+ * @param bool $insensitive
+ * @return bool
+ */
+function str_contains_all(string $haystack, string|array $needle, int $offset = 0, bool $insensitive = false): bool
+{
+    $callback = $insensitive ? 'stripos' : 'strpos';
+    foreach (is_array($needle) ? $needle : [$needle] as $value) {
+        if ($callback($haystack, $value, $offset) === false) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * @param string $haystack
+ * @param string $needle
+ * @param bool $withNeedle
+ * @return string|null
+ */
+function str_before(string $haystack, string $needle, bool $withNeedle = false):? string
+{
+    $index = strpos($haystack, $needle);
+
+    if ($index === false){
+        return null;
+    }
+
+    return str_slice($haystack, $withNeedle ? $index + mb_strlen($needle) : $index);
+}
+
+/**
+ * @param string $haystack
+ * @param string $needle
+ * @param bool $withNeedle
+ * @return string|null
+ */
+function str_after(string $haystack, string $needle, bool $withNeedle = false):? string
+{
+    $index = strpos($haystack, $needle);
+
+    if ($index === false){
+        return null;
+    }
+
+    return substr($haystack, !$withNeedle ? $index + mb_strlen($needle) : $index);
 }
