@@ -311,7 +311,7 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
         public function after(string $needle, bool $withNeedle = false): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
-                return $this->slice(!$withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
+                return $this->slice($withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
             }
 
             return null;
