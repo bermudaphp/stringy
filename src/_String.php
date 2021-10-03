@@ -161,6 +161,8 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
             if ($mode !== null && $mode !== $this->insensitive) {
                 $copy = $this->copy();
                 $copy->insensitive = $mode;
+                
+                return $copy;
             }
 
             return $this->insensitive;
