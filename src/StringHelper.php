@@ -51,18 +51,7 @@ final class StringHelper
      */
     public static function equals(string $subject, string|array $any, bool $insensitive = true): bool
     {
-        is_array($any) ?: $any = [$any];
-
-        foreach ($any as $value) {
-            $result = $insensitive ? strtolower($subject) === strtolower($value)
-                : $subject === (string)$value;
-
-            if ($result === true) {
-                return true;
-            }
-        }
-
-        return false;
+        return str_equals($subject, $any, $insensitive);
     }
 
     /**
@@ -192,23 +181,18 @@ final class StringHelper
      */
     public static function endsWith(string $subject, string|array $any, bool $insensitive = false): bool
     {
-        is_array($any) ?: $any = [$any];
-        $endsWith = static function (string $value) use ($subject, $insensitive): bool {
-            $vLength = mb_strlen($value, $vEnc = self::detectEncoding($value));
-            $sLength = mb_strlen($subject, $sEnc = self::detectEncoding($subject));
-            $end = mb_substr($subject, $sLength - $vLength, $sLength, $sEnc);
+        return str_ends_with($subject, $any, $insensitive);
+    }
 
-            return !$insensitive ? mb_strtolower($value, $vEnc)
-                === mb_strtolower($end, $sEnc) : $value === $end;
-        };
-
-        foreach ($any as $value) {
-            if ($endsWith($value)) {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * @param string $subject
+     * @param string|string[] $any
+     * @param bool $insensitive
+     * @return bool
+     */
+    public static function startsWith(string $subject, string|array $any, bool $insensitive = false): bool
+    {
+        return str_starts_with($subject, $any, $insensitive);
     }
 
     /**
@@ -252,22 +236,19 @@ final class StringHelper
      */
     public static function contains(string $haystack, array|string $needle, bool $insensitive = true, int $offset = 0): bool
     {
-        $contains = static function (string $haystack, string $needle, int $offset) use ($insensitive): bool {
-            try {
-                return ($insensitive ? mb_stripos($haystack, $needle, $offset) :
-                        mb_strpos($haystack, $needle, $offset)) !== false;
-            } catch (Throwable) {
-                return false;
-            }
-        };
+        return str_contains($haystack, $needle, $offset, $insensitive);
+    }
 
-        foreach (is_array($needle) ? $needle : [$offset => $needle] as $offset => $value) {
-            if ($contains($haystack, $value, $offset)) {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * @param string $haystack
+     * @param string[]|string $needle
+     * @param bool $insensitive
+     * @param int $offset
+     * @return bool
+     */
+    public static function containsAll(string $haystack, array $needle, bool $insensitive = true, int $offset = 0): bool
+    {
+        return str_contains_all($haystack, $needle, $offset, $insensitive);
     }
 
     /**
@@ -396,13 +377,27 @@ final class StringHelper
     /**
      * @param string $pattern
      * @param string $subject
+     * @param array|null $matches
      * @param int $flags
      * @param int $offset
      * @return bool
      */
-    public static function match(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
+    public static function match(string $pattern, string $subject, array &$matches = null, int $flags = 0, int $offset = 0): bool
     {
-        return preg_match($pattern, $subject, $flags, $offset) === 1;
+        return str_match($pattern, $subject, $matches, $flags, $offset);
+    }
+
+    /**
+     * @param string $pattern
+     * @param string $subject
+     * @param array|null $matches
+     * @param int $flags
+     * @param int $offset
+     * @return int|null
+     */
+    public static function matchAll(string $pattern, string $subject, array &$matches = null, int $flags = PREG_PATTERN_ORDER, int $offset = 0):? int
+    {
+        return str_match_all($pattern, $subject, $matches, $flags, $offset);
     }
 
     /**
