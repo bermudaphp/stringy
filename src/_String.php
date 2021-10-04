@@ -101,11 +101,11 @@ interface _String
     public function contains(string|array $needle, int $offset = 0): bool;
 
     /**
-     * @param string|string[] $needle
+     * @param string[] $needle
      * @param int $offset
      * @return bool
      */
-    public function containsAll(string|array $needle, int $offset = 0): bool;
+    public function containsAll(array $needle, int $offset = 0): bool;
 
     /**
      * @param string $needle
@@ -242,7 +242,7 @@ interface _String
     public function last(): ?_String;
 
     /**
-     * @param int|string $needle
+     * @param int $pos
      * @return _String
      */
     public function break(int|string $needle): array;
@@ -276,9 +276,9 @@ interface _String
      * @param array|null $matches
      * @param int $flags
      * @param int $offset
-     * @return bool
+     * @return int|null
      */
-    public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool;
+    public function matchAll(string $pattern, ?array &$matches = [], int $flags = PREG_PATTERN_ORDER, int $offset = 0):? int;
 
     /**
      * @return _String
