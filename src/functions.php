@@ -223,15 +223,14 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
         }
 
         /**
-         * @param string|string[] $needle
+         * @param string[] $needle
          * @param int $offset
          * @return bool
          */
-        public function containsAll(string|array $needle, int $offset = 0): bool
+        public function containsAll(array $needle, int $offset = 0): bool
         {
-            is_array($needle) ?: $needle = [$needle];
             foreach ($needle as $value) {
-                if ($this->indexOf($value, $offset) === null) {
+                if ($this->indexOf((string)$value, $offset) === null) {
                     return false;
                 }
             }
@@ -390,7 +389,7 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
          */
         public function equals(array|string $needle): bool
         {
-            return Helper::equals($this->text, $needle, $this->insensitive);
+            return str_equals($this->text, $needle, $this->insensitive);
         }
 
         /**
@@ -420,8 +419,8 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
                 return false;
             }
 
-            return Helper::equals($this->text[0], $char, $this->insensitive) &&
-                Helper::equals($this->text[$this->lastIndex()], $char, $this->insensitive);
+            return str_equals($this->text[0], $char, $this->insensitive) &&
+                str_equals($this->text[$this->lastIndex()], $char, $this->insensitive);
         }
 
         /**
@@ -538,13 +537,7 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
          */
         public function match(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
         {
-            $matched = @preg_match($pattern, $this->text, $matches, $flags, $offset) === 1;
-
-            if ($error = error_get_last()) {
-                throw new RuntimeException($error['message']);
-            }
-
-            return $matched;
+            return str_match($pattern, $this->text, $matches, $flags, $offset) === 1;
         }
 
         /**
@@ -552,17 +545,11 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
          * @param array|null $matches
          * @param int $flags
          * @param int $offset
-         * @return bool
+         * @return int|null
          */
-        public function matchAll(string $pattern, ?array &$matches = [], int $flags = 0, int $offset = 0): bool
+        public function matchAll(string $pattern, ?array &$matches = [], int $flags = PREG_PATTERN_ORDER, int $offset = 0):? int
         {
-            $matched = @preg_match_all($pattern, $this->text, $matches, $flags, $offset) === 1;
-
-            if ($error = error_get_last()) {
-                throw new RuntimeException($error['message']);
-            }
-
-            return $matched;
+            return str_match_all($pattern, $matches, $flags, $offset);
         }
 
         /**
@@ -1163,21 +1150,59 @@ function str_contains(string $haystack, string|array $needle, int $offset = 0, b
 
 /**
  * @param string $haystack
- * @param string|string[] $needle
+ * @param string[] $needle
  * @param int $offset
  * @param bool $insensitive
  * @return bool
  */
-function str_contains_all(string $haystack, string|array $needle, int $offset = 0, bool $insensitive = false): bool
+function str_contains_all(string $haystack, array $needle, int $offset = 0, bool $insensitive = false): bool
 {
     $callback = $insensitive ? 'stripos' : 'strpos';
-    foreach (is_array($needle) ? $needle : [$needle] as $value) {
-        if ($callback($haystack, $value, $offset) === false) {
+    foreach ($needle as $value) {
+        if ($callback($haystack, (string) $value, $offset) === false) {
             return false;
         }
     }
 
     return true;
+}
+
+/**
+ * @param string $pattern
+ * @param string $subject
+ * @param array|null $matches
+ * @param int $flags
+ * @param int $offset
+ * @return bool
+ */
+function str_match(string $pattern, string $subject, array &$matches = null, int $flags = 0, int $offset = 0): bool
+{
+    $result = @preg_match($pattern, $subject, $matches, $flags, $offset) === 1;
+
+    if (($error = error_get_last()) !== null) {
+        throw new RuntimeException($error['message']);
+    }
+
+    return $result;
+}
+
+/**
+ * @param string $pattern
+ * @param string $subject
+ * @param array|null $matches
+ * @param int $flags
+ * @param int $offset
+ * @return int|null
+ */
+function str_match_all(string $pattern, string $subject, array &$matches = null, int $flags = PREG_PATTERN_ORDER, int $offset = 0):? int
+{
+    $result = @preg_match_all($pattern, $subject, $matches, $flags, $offset);
+
+    if (($error = error_get_last()) !== null) {
+        throw new RuntimeException($error['message']);
+    }
+
+    return $result;
 }
 
 /**
@@ -1212,4 +1237,28 @@ function str_after(string $haystack, string $needle, bool $withNeedle = false):?
     }
 
     return substr($haystack, !$withNeedle ? $index + mb_strlen($needle) : $index);
+}
+
+/**
+ * @param string $subject
+ * @param string|array $any
+ * @param bool $insensitive
+ * @return bool
+ */
+function str_equals(string $subject, string|array $any, bool $insensitive = true): bool
+{
+    if ($insensitive) {
+        $subject = strtolower($subject);
+    }
+
+    foreach (is_array($any) ? $any : [$any] as $value) {
+        $result = $insensitive ? $subject === strtolower((string)$value)
+            : $subject === (string)$value;
+
+        if ($result) {
+            return true;
+        }
+    }
+
+    return false;
 }
