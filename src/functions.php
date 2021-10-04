@@ -3,6 +3,8 @@
 namespace Bermuda\String;
 
 use Bermuda\Iterator\StringIterator;
+use Bermuda\String\StringHelper as Helper;
+use Bermuda\Stringy\_String;
 use ForceUTF8\Encoding;
 use LogicException;
 use RuntimeException;
@@ -10,9 +12,9 @@ use function mb_stripos;
 use function mb_strpos;
 use function mb_substr;
 
-function _string(string $text, ?string $encoding = null, bool $insensitive = false): _String
+function _string(string $text = '', ?string $encoding = null, bool $insensitive = false): _String
 {
-    return new class($text, $encoding, $insensitive) implements _String {
+    return new class($text, $encoding, $insensitive) implements _String, _String {
         private bool $multibyte;
 
         public function __construct(private string  $text = '',
@@ -106,12 +108,32 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
 
             return false;
         }
-        
+
+        /**
+         * @return bool
+         */
+        public function isNumeric(): bool
+        {
+            return is_numeric($this->text);
+        }
+
+        /**
+         * @return int|float
+         */
+        public function toNumber(): int|float
+        {
+            if (!$this->isNumeric()) {
+                return 0;
+            }
+
+            return $this->text + 0;
+        }
+
         /**
          * @param string $var
          * @return bool
          */
-        public static function isDate(string $var): bool
+        public function isDate(): bool
         {
             try {
                 new \DateTime($var);
@@ -120,7 +142,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
                 return false;
             }
         }
-        
+
         /**
          * @param \DateTimeZone|null $tz
          * @return \DateTimeInterface
@@ -140,6 +162,8 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
             if ($mode !== null && $mode !== $this->insensitive) {
                 $copy = $this->copy();
                 $copy->insensitive = $mode;
+
+                return $copy;
             }
 
             return $this->insensitive;
@@ -290,7 +314,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function after(string $needle, bool $withNeedle = false): ?_String
         {
             if (($index = $this->indexOf($needle, 0)) !== null) {
-                return $this->slice(!$withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
+                return $this->slice($withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
             }
 
             return null;
@@ -367,7 +391,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
          */
         public function equals(array|string $needle): bool
         {
-            return StringHelper::equals($this->text, $needle, $this->insensitive);
+            return Helper::equals($this->text, $needle, $this->insensitive);
         }
 
         /**
@@ -594,7 +618,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
         public function shuffle(): _String
         {
             $copy = clone $this;
-            $copy->text = StringHelper::shuffle($this->text);
+            $copy->text = Helper::shuffle($this->text);
 
             return $copy;
         }
@@ -637,7 +661,7 @@ function _string(string $text, ?string $encoding = null, bool $insensitive = fal
 
             return $copy;
         }
-        
+
         /**
          * @return _String
          */
