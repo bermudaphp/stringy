@@ -241,7 +241,7 @@ final class StringHelper
 
     /**
      * @param string $haystack
-     * @param string[]|string $needle
+     * @param string[] $needle
      * @param bool $insensitive
      * @param int $offset
      * @return bool
