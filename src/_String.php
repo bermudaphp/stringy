@@ -245,7 +245,7 @@ interface _String
      * @param int $pos
      * @return _String
      */
-    public function break(int $pos): array;
+    public function break(int|string $needle): array;
 
     /**
      * @param int $length
