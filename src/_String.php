@@ -242,7 +242,7 @@ interface _String
     public function last(): ?_String;
 
     /**
-     * @param int $pos
+     * @param int|string $needle
      * @return _String
      */
     public function break(int|string $needle): array;
