@@ -498,9 +498,13 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
          * @param int $pos
          * @return _String[]
          */
-        public function break(int $pos): array
+        public function break(int|string $needle): array
         {
-            return [$this->start($pos), $this->slice($pos)];
+            if (!is_int($needle)){
+                $needle = $this->indexOf($needle) + _string($needle)->length();
+            }
+
+            return [$this->start($needle), $this->slice($needle)];
         }
 
         /**
