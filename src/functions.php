@@ -495,13 +495,13 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
         }
 
         /**
-         * @param int $pos
+         * @param int|string $needle
          * @return _String[]
          */
         public function break(int|string $needle): array
         {
             if (!is_int($needle)){
-                $needle = $this->indexOf($needle) + _string($needle)->length();
+                $needle = $this->indexOf($needle) + Helper::length($needle);
             }
 
             return [$this->start($needle), $this->slice($needle)];
