@@ -4,7 +4,6 @@ namespace Bermuda\String;
 
 use Bermuda\Iterator\StringIterator;
 use Bermuda\String\StringHelper as Helper;
-use Bermuda\Stringy\_String;
 use ForceUTF8\Encoding;
 use LogicException;
 use RuntimeException;
@@ -14,7 +13,7 @@ use function mb_substr;
 
 function _string(string $text = '', ?string $encoding = null, bool $insensitive = false): _String
 {
-    return new class($text, $encoding, $insensitive) implements _String, _String {
+    return new class($text, $encoding, $insensitive) implements _String {
         private bool $multibyte;
 
         public function __construct(private string  $text = '',
