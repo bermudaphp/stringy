@@ -34,6 +34,19 @@ final class Json
     }
 
     /**
+     * @param string $content
+     * @return bool
+     */
+    public static function isEmpty(string $content, bool $throw = true): bool
+    {
+        if ($throw && !self::isJson($content)) {
+            throw new \InvalidArgumentException('The argument [content] must be valid json string');
+        }
+
+        return $content == "" || $content == "[]" || $content == "{}";
+    }
+
+    /**
      * @param $content
      * @return bool
      */
