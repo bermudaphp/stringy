@@ -1179,12 +1179,32 @@ function str_match(string $pattern, string $subject, array &$matches = null, int
 {
     $result = @preg_match($pattern, $subject, $matches, $flags, $offset) === 1;
 
-    if (($error = error_get_last()) !== null) {
-        throw new RuntimeException($error['message']);
+    if (error_get_last() !== null) {
+
+        if (error_get_last()['message'] === 'preg_match(): Delimiter must not be alphanumeric or backslash') {
+            return @preg_match('~'.$pattern.'~', $subject, $matches, $flags, $offset) === 1;
+        }
+
+        throw new RuntimeException(error_get_last()['message']);
     }
 
     return $result;
 }
+
+/**
+ * @param string[] $patterns
+ * @param string $subject
+ * @param array|null $matches
+ * @param int $flags
+ * @param int $offset
+ * @return bool
+ */
+function str_match_any(array $patterns, string $subject, array &$matches = null, int $flags = 0, int $offset = 0): bool
+{
+    foreach ($patterns as $pattern) if (str_match($pattern, $subject, $matches, $flags, $offset)) return true;
+    return false;
+}
+
 
 /**
  * @param string $pattern
