@@ -102,12 +102,12 @@ final class StringHelper
     }
 
     /**
-     * @param int $num
+     * @param int $length
      * @return string
      */
-    public static function uID(int $num = 6, ?string $prefix = null): string
+    public static function uID(int $length = 6, ?string $prefix = null): string
     {
-        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($num))), 0, $num);
+        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($length/2))), 0, $length);
     }
 
     /**
