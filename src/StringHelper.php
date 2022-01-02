@@ -408,10 +408,7 @@ final class StringHelper
      */
     public static function interval(string $input, int $start, int $end): string
     {
-        for ($string = ''; $end >= $start; $start++) {
-            $string .= $input[$start];
-        }
-
+        for ($string = ''; $end >= $start; $start++) $string .= $input[$start];
         return $string;
     }
 
