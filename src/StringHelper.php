@@ -129,8 +129,8 @@ final class StringHelper
                     self::random($length, self::symbols);
             }
 
-            $pswd = self::random($multi = ceil($length / 3) * 2, self::numbers . self::chars)
-                . self::random($length - $multi, self::symbols);
+            $pswd = self::random($c = ceil($length / 3), self::numbers). self::random($c, self::chars)
+                . self::random($length - $c*2, self::symbols);
 
             return self::shuffle($pswd);
         }
