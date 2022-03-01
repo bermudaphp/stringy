@@ -10,7 +10,7 @@ use Throwable;
 final class StringHelper
 {
     private const numbers = '0123456789';
-    private const symbols = '[~`!@#$%^&*()}{?<>/|_=+-]';
+    private const symbols = '[~!@#$%^&*()_+{}/|\\<>?=]';
     private const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     public function __construct()
