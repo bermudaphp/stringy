@@ -369,7 +369,7 @@ interface _String extends \IteratorAggregate
 
     /**
      * @param int $length
-     * @return _String
+     * @return _String[]
      */
     public function split(int $length = 1): array;
 
