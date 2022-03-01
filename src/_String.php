@@ -2,11 +2,11 @@
 
 namespace Bermuda\String;
 
+use Bermuda\Iterator\StringIterator;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use RuntimeException;
-use Bermuda\Iterator\StringIterator;
 
 interface _String extends \IteratorAggregate
 {
@@ -27,7 +27,9 @@ interface _String extends \IteratorAggregate
     /**
      * @return iterable<_String>
      */
-    public function getIterator(): StringIterator;
+    public function getIterator(): \Traversable;
+    
+    public function each(callable $callback): void ;
 
     /**
      * @return string
