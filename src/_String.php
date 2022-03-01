@@ -28,7 +28,7 @@ interface _String extends \IteratorAggregate
      * @return iterable<_String>
      */
     public function getIterator(): \Traversable;
-    
+
     public function each(callable $callback): void ;
 
     /**
