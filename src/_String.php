@@ -25,7 +25,7 @@ interface _String extends \IteratorAggregate
     public function toArray(): array;
 
     /**
-     * @return StringIterator
+     * @return iterable<_String>
      */
     public function getIterator(): StringIterator;
 
