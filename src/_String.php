@@ -20,7 +20,7 @@ interface _String extends \IteratorAggregate
     public function slice(int $pos, int $length = null): _String;
 
     /**
-     * @return _String
+     * @return _String[]
      */
     public function toArray(): array;
 
