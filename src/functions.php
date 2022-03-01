@@ -86,7 +86,7 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
         {
             $last = $this->lastIndex();
             for ($i = $this->firstIndex(); $last >= $i; $i++) {
-                if ($callback($this->text[$i], $i)) {
+                if ($callback($this->text[$i], $i) === true) {
                     break;
                 }
             }
