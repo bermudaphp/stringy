@@ -68,11 +68,28 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
         }
 
         /**
-         * @return StringIterator
+         * @return \iterable<_String>
          */
-        public function getIterator(): StringIterator
+        public function getIterator(): \Generator
         {
-            return new StringIterator($this->text);
+            $last = $this->lastIndex();
+            for ($i = $this->firstIndex(); $last >= $i; $i++) {
+                yield new self($this->text[$i], $this->encoding, $this->insensitive);
+            }
+        }
+
+        /**
+         * @param callable $callback
+         * @return void
+         */
+        public function each(callable $callback): void
+        {
+            $last = $this->lastIndex();
+            for ($i = $this->firstIndex(); $last >= $i; $i++) {
+                if ($callback($this->text[$i], $i)) {
+                    break;
+                }
+            }
         }
 
         /**
