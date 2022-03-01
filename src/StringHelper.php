@@ -36,6 +36,24 @@ final class StringHelper
      * @param string $subject
      * @return bool
      */
+    public static function containsSymbols(string $subject): bool
+    {
+        return self::contains($subject, str_split(self::symbols));
+    }
+    
+    /**
+     * @param string $subject
+     * @return bool
+     */
+    public static function containsNumbers(string $subject): bool
+    {
+        return self::contains($subject, str_split(self::numbers));
+    }
+
+    /**
+     * @param string $subject
+     * @return bool
+     */
     public static function isBool(string $subject): bool
     {
         return self::equals($subject, [
