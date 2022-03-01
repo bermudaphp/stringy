@@ -2,13 +2,13 @@
 
 namespace Bermuda\String;
 
-use Bermuda\Iterator\StringIterator;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use RuntimeException;
+use Bermuda\Iterator\StringIterator;
 
-interface _String
+interface _String extends \IteratorAggregate
 {
     public function copy(): _String;
 
