@@ -118,7 +118,7 @@ function _string(string $text = '', ?string $encoding = null, bool $insensitive 
          */
         public function toBoolean(): bool
         {
-            if ($this->equals(['on', 'y', 'yes', '1'])) {
+            if ($this->equals(['on', 'y', 'yes', '1', 'true'])) {
                 return true;
             }
 
