@@ -60,6 +60,15 @@ final class StringHelper
                 '1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n'
             ]) !== false;
     }
+    
+    /**
+     * @param string $subject
+     * @return bool
+     */
+    public static function toBool(string $subject): bool
+    {
+        return self::equals($subject, ['1', 'on', 'true', 'yes', 'y']);
+    }
 
     /**
      * @param string $subject
