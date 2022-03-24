@@ -49,6 +49,15 @@ final class StringHelper
     {
         return self::contains($subject, str_split(self::numbers));
     }
+    
+    /**
+     * @param $var
+     * @return bool
+     */
+    public static function isStringable($var): bool
+    {
+        return is_string($var) || is_numeric($var) || $var instanceof \Stringable;
+    }
 
     /**
      * @param string $subject
