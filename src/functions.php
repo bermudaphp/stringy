@@ -1143,7 +1143,7 @@ function str_ends_with(string $haystack, string|array $needle, bool $insensitive
  */
 function str_slice(string $subject, int $length): string
 {
-    return substr($subject, 0, $length);
+    return substr($subject,  $length);
 }
 
 /**
@@ -1251,12 +1251,10 @@ function str_match_all(string $pattern, string $subject, array &$matches = null,
 function str_before(string $haystack, string $needle, bool $withNeedle = false):? string
 {
     $index = strpos($haystack, $needle);
-
-    if ($index === false){
+    if ($index === false) {
         return null;
     }
-
-    return str_slice($haystack, $withNeedle ? $index + mb_strlen($needle) : $index);
+    return substr($haystack, 0, $withNeedle ?  $index + mb_strlen($needle) : $index);
 }
 
 /**
@@ -1268,12 +1266,11 @@ function str_before(string $haystack, string $needle, bool $withNeedle = false):
 function str_after(string $haystack, string $needle, bool $withNeedle = false):? string
 {
     $index = strpos($haystack, $needle);
-
-    if ($index === false){
+    if ($index === false) {
         return null;
     }
 
-    return substr($haystack, !$withNeedle ? $index + mb_strlen($needle) : $index);
+    return str_slice($haystack, $withNeedle ? $index : $index + mb_strlen($needle));
 }
 
 /**
