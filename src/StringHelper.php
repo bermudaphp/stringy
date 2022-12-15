@@ -31,6 +31,16 @@ final class StringHelper
     {
         return round(pow(1024, ($base = log($bytes, 1024)) - floor($base)), $precision) .' '. ['', 'KB', 'MB', 'GB', 'TB'][floor($base)];
     }
+    
+    /**
+     * @param int $length
+     * @return string
+     * @throws Exception
+     */
+    public static function alphanumeric(int $length): string
+    {
+        return substr(bin2hex(random_bytes($length)), 0, $length);
+    }
 
     /**
      * @param string $subject
