@@ -10,6 +10,9 @@ use RuntimeException;
 
 interface _String extends \IteratorAggregate
 {
+    public const TRIM_LETF = 1;
+    public const TRIM_RIGHT = 2;
+    
     public function copy(): _String;
 
     /**
