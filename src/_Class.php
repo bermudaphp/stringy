@@ -1,8 +1,8 @@
 <?php
 
-namespace Bermuda\String;
+namespace Bermuda\Stdlib;
 
-final class _Class
+final class ClsHelper
 {
     private const separator = '\\';
     public const class_name_regex = '^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$';
