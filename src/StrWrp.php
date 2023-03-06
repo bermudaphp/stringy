@@ -2,7 +2,7 @@
 
 namespace Bermuda\Stdlib;
 
-class StrWrp implements Stringable, Countable
+class StrWrp implements \Stringable, \Countable
 {
     protected bool $multibyte;
     public function __construct(
@@ -27,7 +27,10 @@ class StrWrp implements Stringable, Countable
     {
         return $this->value;
     }
-    
+
+    /**
+     * @return int
+     */
     public function count(): int
     {
         return $this->length();
@@ -57,7 +60,7 @@ class StrWrp implements Stringable, Countable
     }
 
     /**
-     * @return \iterable<string>
+     * @return \Generator<string>
      */
     public function getIterator(): \Generator
     {
@@ -130,7 +133,6 @@ class StrWrp implements Stringable, Countable
     }
 
     /**
-     * @param string $var
      * @return bool
      */
     public function isDate(): bool
@@ -205,6 +207,7 @@ class StrWrp implements Stringable, Countable
     /**
      * @param string $needle
      * @param int $offset
+     * @param bool $ignoreCase
      * @return int|null
      */
     public function indexOf(string $needle, int $offset = 0, bool $ignoreCase = true): ?int
@@ -239,6 +242,7 @@ class StrWrp implements Stringable, Countable
 
     /**
      * @param int $length
+     * @param bool $remove
      * @return StrWrp
      */
     public function start(int $length, bool $remove = false): StrWrp
@@ -284,7 +288,7 @@ class StrWrp implements Stringable, Countable
      */
     public function after(string $needle, bool $withNeedle = false): ?StrWrp
     {
-        if (($index = $this->indexOf($needle, 0)) !== null) {
+        if (($index = $this->indexOf($needle)) !== null) {
             return $this->slice($withNeedle ? $index : $index + mb_strlen($needle, $this->encoding));
         }
 
@@ -339,6 +343,7 @@ class StrWrp implements Stringable, Countable
     /**
      * @param string|string[] $search
      * @param string|string[] $replace
+     * @param bool $ignoreCase
      * @return StrWrp
      */
     public function replace(string|array $search, string|array $replace, bool $ignoreCase = true): StrWrp
@@ -917,9 +922,10 @@ class StrWrp implements Stringable, Countable
     /**
      * @param int $options
      * @return string
+     * @throws JsonException
      */
     public function toJson(int $options = 0): string
     {
         return json_encode($this->value, $options | JSON_THROW_ON_ERROR);
     }
-};
+}
