@@ -33,10 +33,10 @@ final class ClsHelper
     public static function isValidName(string $name, bool $withNamespace = true): bool
     {
         if ($withNamespace) {
-            return str_match('`'.self::class_name_with_namespace_regex.'`', $name);
+            return StrHelper::match('`'.self::class_name_with_namespace_regex.'`', $name);
         }
 
-        return str_match('`'.self::class_name_regex.'`', $name);
+        return StrHelper::match('`'.self::class_name_regex.'`', $name);
     }
 
     /**
