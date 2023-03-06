@@ -1,22 +1,17 @@
 <?php
 
-namespace Bermuda\String;
+namespace Bermuda\Stdlib;
 
 use Exception;
 use ForceUTF8\Encoding;
 use RuntimeException;
 use Throwable;
 
-final class StringHelper
+final class StrHelper
 {
     private const numbers = '0123456789';
     private const symbols = '[~!@#$%^&*()_+{}/|\\<>?=]';
     private const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-    public function __construct()
-    {
-        throw new RuntimeException(sprintf('Class: %s not instantiable', __CLASS__));
-    }
 
     /**
      * @param string $subject
@@ -26,12 +21,12 @@ final class StringHelper
     {
         return strlen($subject) !== mb_strlen($subject);
     }
-    
+
     public static function bytesTo(int $bytes, int $precision = 2): string
     {
         return round(pow(1024, ($base = log($bytes, 1024)) - floor($base)), $precision) .' '. ['', 'KB', 'MB', 'GB', 'TB'][floor($base)];
     }
-    
+
     /**
      * @param int $length
      * @return string
@@ -50,7 +45,7 @@ final class StringHelper
     {
         return self::contains($subject, str_split(self::symbols));
     }
-    
+
     /**
      * @param string $subject
      * @return bool
@@ -59,7 +54,7 @@ final class StringHelper
     {
         return self::contains($subject, str_split(self::numbers));
     }
-    
+
     /**
      * @param $var
      * @return bool
@@ -79,7 +74,7 @@ final class StringHelper
                 '1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n'
             ]) !== false;
     }
-    
+
     /**
      * @param string $subject
      * @return bool
@@ -90,30 +85,38 @@ final class StringHelper
     }
 
     /**
-     * @param string $subject
-     * @param string[] $any
-     * @param bool $insensitive
+     * @param string $haystack
+     * @param string[] $needle
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function equals(string $subject, string|array $any, bool $insensitive = true): bool
+    public static function equals(string $haystack, string|array $needle, bool $ignoreCase = true): bool
     {
-        return str_equals($subject, $any, $insensitive);
+        if (is_string($needle)) {
+            return $ignoreCase ? strtolower($needle) === strtolower($haystack) : $needle === $haystack ;
+        }
+        
+        foreach ($needle as $value) {
+            if (self::equals($haystack, (string) $value, $ignoreCase)) return true;
+        }
+        
+        return false;
     }
 
     /**
      * @param string $subject
      * @param string $char
-     * @param bool $insensitive
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function isWrapped(string $subject, string $char, bool $insensitive = true): bool
+    public static function isWrapped(string $subject, string $char, bool $ignoreCase = true): bool
     {
         if (empty($subject)) {
             return false;
         }
 
-        return self::equals($subject[0], $char, $insensitive) &&
-            self::equals($subject[mb_strlen($subject) - 1], $char, $insensitive);
+        return self::equals($subject[0], $char, $ignoreCase) &&
+            self::equals($subject[mb_strlen($subject) - 1], $char, $ignoreCase);
     }
 
     /**
@@ -137,45 +140,61 @@ final class StringHelper
     }
 
     /**
-     * Generate random filename
-     * @param string|null $ext
-     * @param string|null $prefix
+     * @param string $ext
+     * @param string $prefix
      * @return string
+     * @throws Exception
      */
-    public static function filename(?string $ext = null, ?string $prefix = null): string
+    public static function filename(string $ext = '', string $prefix = ''): string
     {
-        return self::uID(7, $prefix) . ($ext == null ? '' : '.' . ltrim($ext, '.'));
+        return sprintf('%s%s.%s', $prefix, self::hex(7), ltrim($ext, '.'));
     }
 
     /**
      * @param int $length
      * @return string
+     * @throws \Exception
      */
-    public static function uID(int $length = 6, ?string $prefix = null): string
+    public static function hex(int $length): string
     {
-        return ($prefix ?? '') . substr(bin2hex(random_bytes(ceil($length/2))), 0, $length);
+        return substr(bin2hex(random_bytes(ceil($length/2))), 0, $length);
     }
 
     /**
      * @param int $length
      * @param bool $useSymbols
+     * @param bool $useNumbers
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
-    public static function password(int $length = 8, bool $useSymbols = true): string
+    public static function pswd(int $length = 8, bool $useSymbols = true, bool $useNumbers = true): string
     {
         if ($useSymbols) {
-            if ($length < 3) {
-                return self::random($length);
-            }
+            if ($length < 3) return self::random($length);
 
             if ($length % 3 == 0) {
-                return self::random($length = $length / 3, self::numbers) .
+                if ($useNumbers) {
+                    $pswd = self::random($length = $length / 3, self::symbols) .
+                        self::random($length*2, self::chars);
+
+                    return self::shuffle($pswd);
+                }
+
+                $pswd = self::random($length = $length / 3, self::numbers) .
                     self::random($length, self::chars) .
                     self::random($length, self::symbols);
+
+                return self::shuffle($pswd);
             }
 
-            $pswd = self::random($c = ceil($length / 3), self::numbers). self::random($c, self::chars)
+            if ($useNumbers) {
+                $pswd = self::random($c = ceil($length / 3), self::numbers). self::random($c, self::chars)
+                    . self::random($length - $c*2, self::symbols);
+
+                return self::shuffle($pswd);
+            }
+
+            $pswd = self::random(($c = ceil($length / 3))*2, self::chars)
                 . self::random($length - $c*2, self::symbols);
 
             return self::shuffle($pswd);
@@ -185,18 +204,19 @@ final class StringHelper
     }
 
     /**
-     * @param int $num
+     * @param int $length
      * @param string|null $chars
      * @return string
+     * @throws Exception
      */
-    public static function random(int $num, ?string $chars = null): string
+    public static function random(int $length, ?string $chars = null): string
     {
         $chars = $chars ?? self::numbers . self::chars . self::symbols;
         $max = mb_strlen($chars) - 1;
 
         $string = '';
 
-        while ($num--) {
+        while ($length--) {
             $string .= $chars[random_int(0, $max)];
         }
 
@@ -211,34 +231,59 @@ final class StringHelper
     public static function shuffle(string $string): string
     {
         $chars = str_split($string);
+        $charsCount = count($chars);
+        $shuffle = '';
 
-        usort($chars, static fn(): int => ($left = random_int(0, 100)) == ($right = random_int(0, 100))
-            ? 0 : ($left > $right ? 1 : -1)
-        );
+        while ($charsCount--) {
+            $shuffle .= $chars[$i = random_int(0, $charsCount - 1)];
+            unset($chars[$i]);
+        }
 
-        return implode('', $chars);
+        return $shuffle;
     }
 
     /**
-     * @param string $subject
-     * @param string|string[] $any
-     * @param bool $insensitive
+     * @param string $haystack
+     * @param string|string[] $needle
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function endsWith(string $subject, string|array $any, bool $insensitive = false): bool
+    public static function endsWith(string $haystack, string|array $needle, bool $ignoreCase = false): bool
     {
-        return str_ends_with($subject, $any, $insensitive);
+        if (is_string($needle)) {
+            return $ignoreCase ? str_ends_with(strtolower($haystack), strtolower($needle))
+                : str_ends_with($haystack, $needle);
+        }
+
+        foreach ($needle as $value) {
+            if (self::endsWith($haystack, (string) $value, $ignoreCase)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * @param string $subject
-     * @param string|string[] $any
-     * @param bool $insensitive
+     * @param string $haystack
+     * @param string|string[] $needle
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function startsWith(string $subject, string|array $any, bool $insensitive = false): bool
+    public static function startsWith(string $haystack, string|array $needle, bool $ignoreCase = false): bool
     {
-        return str_starts_with($subject, $any, $insensitive);
+        if (is_string($needle)) {
+            return $ignoreCase ? str_starts_with(strtolower($haystack), strtolower($needle))
+                : str_starts_with($haystack, $needle);
+        }
+
+        foreach ($needle as $value) {
+            if (self::startsWith($haystack, (string) $value, $ignoreCase)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -256,9 +301,15 @@ final class StringHelper
      */
     public static function isJson(string $content): bool
     {
-        return Json::isJson($content);
+        try {
+            json_decode($content, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return false;
+        }
+
+        return true;
     }
-    
+
     /**
      * @param string $var
      * @return bool
@@ -267,34 +318,48 @@ final class StringHelper
     {
         try {
             new \DateTime($var);
-            return true;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
+
+        return true;
     }
 
     /**
      * @param string $haystack
      * @param string[]|string $needle
-     * @param bool $insensitive
-     * @param int $offset
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function contains(string $haystack, array|string $needle, bool $insensitive = true, int $offset = 0): bool
+    public static function contains(string $haystack, array|string $needle, bool $ignoreCase = true): bool
     {
-        return str_contains($haystack, $needle, $offset, $insensitive);
+        if (is_string($needle)) {
+            return $ignoreCase ? str_contains(strtolower($haystack), strtolower($needle))
+                : str_contains($haystack, $needle);
+        }
+
+        foreach ($needle as $value) {
+            if (self::contains($haystack, (string) $value, $ignoreCase)) return true;
+        }
+
+        return false;
     }
 
     /**
      * @param string $haystack
      * @param string[] $needle
-     * @param bool $insensitive
-     * @param int $offset
+     * @param bool $ignoreCase
      * @return bool
      */
-    public static function containsAll(string $haystack, array $needle, bool $insensitive = true, int $offset = 0): bool
+    public static function containsAll(string $haystack, array $needle, bool $ignoreCase = true): bool
     {
-        return str_contains_all($haystack, $needle, $offset, $insensitive);
+        foreach ($needle as $value) {
+            if (!self::contains($haystack, (string) $value, $ignoreCase)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -309,16 +374,17 @@ final class StringHelper
     }
 
     /**
-     * @param array $subject
-     * @param string|array $glue
+     * @param array $segments
+     * @param string $glue
      * @return string
      */
-    public static function implode(array $subject, string|array $glue = ','): string
+    public static function implode(array $segments, string $glue = ','): string
     {
-        return implode($glue, $subject);
+        return implode($glue, $segments);
     }
 
     /**
+     * @param string $subject
      * @return bool
      */
     public static function isAlphanumeric(string $subject): bool
@@ -403,6 +469,7 @@ final class StringHelper
     }
 
     /**
+     * @param string $subject
      * @return bool
      */
     public static function isUpperCase(string $subject): bool
@@ -430,20 +497,7 @@ final class StringHelper
      */
     public static function match(string $pattern, string $subject, array &$matches = null, int $flags = 0, int $offset = 0): bool
     {
-        return str_match($pattern, $subject, $matches, $flags, $offset);
-    }
-
-    /**
-     * @param string $pattern
-     * @param string $subject
-     * @param array|null $matches
-     * @param int $flags
-     * @param int $offset
-     * @return int|null
-     */
-    public static function matchAll(string $pattern, string $subject, array &$matches = null, int $flags = PREG_PATTERN_ORDER, int $offset = 0):? int
-    {
-        return str_match_all($pattern, $subject, $matches, $flags, $offset);
+        return preg_match($pattern, $subject, $matches, $flags, $offset) === 1;
     }
 
     /**
@@ -465,5 +519,27 @@ final class StringHelper
     public static function isAlpha(string $subject): bool
     {
         return self::mbMatch('^[[:alpha:]]*$', $subject);
+    }
+
+    public static function swapCase(string $var): string
+    {
+        return mb_strtolower($var) ^ mb_strtoupper($var) ^ $var;
+    }
+
+    public static function titleize(string $var, string|array $ignore = []): string
+    {
+        $ignore = is_string($ignore) ? [$ignore] : $ignore;
+
+        return preg_replace_callback(
+            '/([\S]+)/u',
+            static function ($match) use ($ignore) {
+                if ($ignore !== [] && in_array($match[0], $ignore)) {
+                    return $match[0];
+                }
+
+                return ucfirst(strtolower($match[0]));
+            },
+            $var
+        );
     }
 }
