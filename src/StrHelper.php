@@ -65,23 +65,65 @@ final class StrHelper
     }
 
     /**
-     * @param string $subject
+     * @param string $var
      * @return bool
      */
-    public static function isBool(string $subject): bool
+    public static function isBool(string $var): bool
     {
-        return self::equals($subject, [
-                '1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n'
-            ]) !== false;
+        return self::equals($var, ['1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n']);
     }
 
     /**
-     * @param string $subject
+     * @param string $var
      * @return bool
      */
-    public static function toBool(string $subject): bool
+    public static function isFalse(string $var): bool
     {
-        return self::equals($subject, ['1', 'on', 'true', 'yes', 'y']);
+        return self::equals($var, ['0', 'off', 'false', 'no', 'n']);
+    }
+
+    /**
+     * @param string $var
+     * @return bool
+     */
+    public static function isTrue(string $var): bool
+    {
+        return self::equals($var, ['1', 'on', 'true', 'yes', 'y']);
+    }
+
+    /**
+     * @param string $var
+     * @param int $length
+     * @param bool $remove
+     * @return string
+     */
+    public static function start(string $var, int $length, bool $remove = false): string
+    {
+        if ($remove) return mb_substr($var, $length);
+        return mb_substr($var, 0, $length);
+    }
+
+    /**
+     * @param string $var
+     * @param int $length
+     * @param bool $remove
+     * @return string
+     */
+    public static function end(string $var, int $length, bool $remove = false): string
+    {
+        if ($remove) return static::start($var, mb_strlen($var) - abs($length));
+        return mb_substr($var, -$length = abs($length), $length);
+    }
+
+    /**
+     * @param string $var
+     * @return bool
+     */
+    public static function toBool(string $var):? bool
+    {
+        if (!static::isBool($var)) return null;
+        if (static::isTrue($var)) return true;
+        if (static::isFalse($var)) return false;
     }
 
     /**
