@@ -70,7 +70,7 @@ final class StrHelper
      */
     public static function isBool(string $var): bool
     {
-        return self::equals($var, ['1', '0', 'on', 'off', 'true', 'false', 'yes', 'no', 'y', 'n']);
+        return self::isFalse($var) || self::isTrue($var);
     }
 
     /**
