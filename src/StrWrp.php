@@ -166,11 +166,12 @@ class StrWrp implements \Stringable, \Countable
     /**
      * @param string $delim
      * @param int $limit
-     * @return string[]
+     * @return StrWrp[]
      */
-    public function explode(string $delim = '/', int $limit = PHP_INT_MAX): array
+    public function explode(string $delim = '/', int $limit = PHP_INT_MAX, bool $returnSelf = true): array
     {
-        return explode($delim, $this->value, $limit);
+        $segments = explode($delim, $this->value, $limit);
+        return $returnSelf ? array_map(fn($segment) => new static($segment), $segments) : $segments;
     }
 
     /**
@@ -713,19 +714,24 @@ class StrWrp implements \Stringable, \Countable
 
     /**
      * @param int $length
-     * @return string[]
+     * @return StrWrp[]|string[]
      */
-    public function split(int $length = 1): array
+    public function split(int $length = 1, bool $returnSelf = true): array
     {
         if ($length < 1) {
             throw new LogicException('Argument [length] must be larger by zero');
         }
+        
+        $chars = [];
 
         for ($count = $this->length(); $count > 0; $count -= $length) {
             $chars[] = substr($this->value, -$count, $length);
         }
+        
+        if ($chars === []) return $chars;
+        
 
-        return $chars ?? [];
+        return $returnSelf ? array_map(fn($char) => new static($char), $chars) : $chars;
     }
 
     /**
