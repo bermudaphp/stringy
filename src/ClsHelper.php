@@ -14,16 +14,18 @@ final class ClsHelper
      */
     public static function basename(string $cls): string
     {
-        return self::split($cls)[1];
+        $result = self::split($cls);
+        return is_array($result) ? $result[1] : $result;
     }
     
     /**
      * @param string $cls
      * @return array
      */
-    public static function namespace(string $cls): string
+    public static function namespace(string $cls):? string
     {
-        return self::split($cls)[0];
+        $result = self::split($cls);
+        return is_array($result) ? $result[0] : null;
     }
 
     /**
@@ -43,9 +45,14 @@ final class ClsHelper
      * @param string $cls
      * @return array
      */
-    public static function split(string $cls): array
+    public static function split(string $cls): array|string
     {
         $segments = explode(self::separator, $cls);
-        return [1 => array_pop($segments), 0 => implode(self::separator, $segments)];
+        
+        if (count($segments) > 1) {
+            return [1 => array_pop($segments), 0 => implode(self::separator, $segments)];
+        }
+        
+        return $cls;
     }
 }
