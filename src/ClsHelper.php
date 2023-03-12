@@ -10,7 +10,7 @@ final class ClsHelper
     
     /**
      * @param string $cls
-     * @return array
+     * @return string
      */
     public static function basename(string $cls): string
     {
@@ -20,7 +20,7 @@ final class ClsHelper
     
     /**
      * @param string $cls
-     * @return array
+     * @return ?string
      */
     public static function namespace(string $cls):? string
     {
@@ -43,16 +43,16 @@ final class ClsHelper
 
     /**
      * @param string $cls
-     * @return array
+     * @return array|string
      */
     public static function split(string $cls): array|string
     {
         $segments = explode(self::separator, $cls);
-        
+
         if (count($segments) > 1) {
             return [1 => array_pop($segments), 0 => implode(self::separator, $segments)];
         }
-        
+
         return $cls;
     }
 }
