@@ -272,18 +272,17 @@ final class StrHelper
      */
     public static function shuffle(string $string): string
     {
-        $chars = str_split($string);
-        $charsCount = count($chars);
         $shuffle = '';
-
-        while ($charsCount--) {
-            $shuffle .= $chars[$i = random_int(0, $charsCount - 1)];
+        $chars = str_split($string);
+        
+        while (($count = count($chars)) > 0) {
+            $shuffle .= $chars[$i = random_int(0, $count - 1)];
             unset($chars[$i]);
         }
 
         return $shuffle;
     }
-
+    
     /**
      * @param string $haystack
      * @param string|string[] $needle
