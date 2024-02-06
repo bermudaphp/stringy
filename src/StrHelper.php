@@ -106,6 +106,16 @@ final class StrHelper
     /**
      * @param string $var
      * @param int $length
+     * @return string
+     */
+    public static function slice(string $var, int $length): string
+    {
+        return mb_substr($var, $length);
+    }
+
+    /**
+     * @param string $var
+     * @param int $length
      * @param bool $remove
      * @return string
      */
@@ -254,15 +264,9 @@ final class StrHelper
     public static function random(int $length, ?string $chars = null): string
     {
         $chars = $chars ?? self::numbers . self::chars . self::symbols;
-        $max = mb_strlen($chars) - 1;
+        $chars = self::shuffle($chars);
 
-        $string = '';
-
-        while ($length--) {
-            $string .= $chars[random_int(0, $max)];
-        }
-
-        return $string;
+        return self::slice($chars, $length);
     }
 
     /**
@@ -272,17 +276,9 @@ final class StrHelper
      */
     public static function shuffle(string $string): string
     {
-        $shuffle = '';
-        $chars = str_split($string);
-        
-        while (($count = count($chars)) > 0) {
-            $shuffle .= $chars[$i = random_int(0, $count - 1)];
-            unset($chars[$i]);
-        }
-
-        return $shuffle;
+        return str_shuffle($string);
     }
-    
+
     /**
      * @param string $haystack
      * @param string|string[] $needle
