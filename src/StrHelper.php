@@ -110,7 +110,7 @@ final class StrHelper
      */
     public static function slice(string $var, int $length): string
     {
-        return mb_substr($var, $length);
+        return mb_substr($var, 0, $length);
     }
 
     /**
