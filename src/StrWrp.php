@@ -41,7 +41,7 @@ class StrWrp implements \Stringable, \Countable
      * @param int|null $length
      * @return StrWrp
      */
-    public function slice(int $pos, int $length = null): StrWrp
+    public function slice(int $pos, ?int $length = null): StrWrp
     {
         $copy = clone $this;
         $copy->value = $this->multibyte ?
@@ -145,7 +145,7 @@ class StrWrp implements \Stringable, \Countable
      * @return \DateTimeInterface
      * @throws \Exception
      */
-    public function toDate(\DateTimeZone $tz = null): \DateTimeInterface
+    public function toDate(?\DateTimeZone $tz = null): \DateTimeInterface
     {
         return new \DateTimeImmutable($this->value, $tz);
     }
@@ -524,7 +524,7 @@ class StrWrp implements \Stringable, \Countable
      * @param int|null $count
      * @return StrWrp
      */
-    public function pregReplace(string|array $pattern, string|array $replacement, int $limit = -1, int &$count = null): StrWrp
+    public function pregReplace(string|array $pattern, string|array $replacement, int $limit = -1, ?int &$count = null): StrWrp
     {
         $copy = clone $this;
         $copy->value = preg_replace($pattern, $replacement, $this->value, $limit, $count);
@@ -659,7 +659,7 @@ class StrWrp implements \Stringable, \Countable
      * @param int|null $length
      * @return int
      */
-    public function substrCount(string $needle, int $offset = 0, int $length = null): int
+    public function substrCount(string $needle, int $offset = 0, ?int $length = null): int
     {
         return substr_count($this->value, $needle, $offset, $length);
     }
