@@ -532,7 +532,7 @@ final class StrHelper
      * @param int $offset
      * @return bool
      */
-    public static function match(string $pattern, string $subject, array &$matches = null, int $flags = 0, int $offset = 0): bool
+    public static function match(string $pattern, string $subject, ?array &$matches = null, int $flags = 0, int $offset = 0): bool
     {
         return preg_match($pattern, $subject, $matches, $flags, $offset) === 1;
     }
