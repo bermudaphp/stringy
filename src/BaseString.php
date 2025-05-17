@@ -30,11 +30,16 @@ trait BaseString
      *
      * @param callable(StringInterface $object): void $initializer Function that returns the string value
      * @return StringInterface Lazy-initialized string instance
+     *
+     * For example
+     * $str = Str::createLazy(static function (Str $str) {
+     *     $str->__construct(hash('sha256', 'The quick brown fox jumped over the lazy dog.'));
+     * })
      */
     public static function createLazy(callable $initializer): StringInterface
     {
         $reflector = new \ReflectionClass(static::class);
-        return $reflector->newLazyProxy($initializer);
+        return $reflector->newLazyGhost($initializer);
     }
 
     /**
