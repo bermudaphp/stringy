@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bermuda\Stringy;
+namespace Bermuda\Stdlib;
 
 /**
  * Helper class for working with Unicode characters
