@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="Bermuda Stdlib Coding Standard">
+    <!-- Display progress and sniff -->
+    <arg value="p"/>
+    <arg value="s"/>
+    
+    <!-- Use PSR-12 -->
+    <rule ref="PSR12"/>
+    
+    <!-- Paths to check -->
+    <file>src</file>
+    <file>tests</file>
+    
+    <!-- Show sniff codes in all reports -->
+    <arg value="s"/>
+    <arg name="colors"/>
+    
+    <!-- Exclude some files -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/build/*</exclude-pattern>
+</ruleset>
