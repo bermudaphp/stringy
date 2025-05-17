@@ -1,6 +1,6 @@
 # bermudaphp/stringy
 
-[![PHP Version Require](https://img.shields.io/badge/php-%3E%3D8.2-brightgreen.svg)](https://php.net/)
+[![PHP Version Require](https://img.shields.io/badge/php-%3E%3D8.4-brightgreen.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bermudaphp/stringy/blob/master/LICENSE)
 [![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bermudaphp/stringy/tests.yml?branch=master&label=tests)](https://github.com/bermudaphp/stringy/actions/workflows/tests.yml)
 
@@ -61,6 +61,66 @@ $str = Stringy::of('Hello World');
 
 // Создать через конструктор
 $str = new Str('Hello World');
+```
+## Ленивая инициализация с createLazy()
+
+Статический метод `createLazy()` позволяет создавать объекты строк с отложенной инициализацией, которые конструируются только при фактическом обращении к ним. Это может значительно повысить производительность, откладывая выполнение ресурсоемких операций до момента, когда они действительно необходимы.
+
+### Базовое использование
+
+```php
+// Создание строкового объекта с отложенной инициализацией
+$lazy = \Bermuda\Stdlib\Str::createLazy(static function (\Bermuda\Stdlib\Str $str) {
+    $str->__construct('construct call');
+});
+
+// Инициализация не происходит, пока не обратились к объекту
+echo $lazy->value; // Вызывает инициализацию: "construct call"
+```
+Как это работает
+
+В отличие от традиционных объектов, которые инициализируются сразу, ленивые ghost-объекты:
+
+Создают минимальный объект-заместитель изначально.
+Выполняют функцию инициализации только при обращении к свойству или методу.
+Инициализируют объект в момент обращения с указанными вами значениями.
+
+Когда использовать
+Ленивая инициализация особенно полезна, когда:
+
+Ресурсоемкая инициализация: Загрузка данных из файлов, баз данных или API.
+Условное использование: Когда объекты могут не использоваться во всех путях выполнения кода.
+Оптимизация производительности: Откладывание затратных операций до абсолютной необходимости.
+Управление памятью: Снижение использования памяти за счет неинициализации неиспользуемых объектов
+
+Расширенный пример
+
+```php
+// Создание нескольких ленивых строковых объектов для отчета
+$reportFields = [
+    'title' => Str::createLazy(function($str) use ($reportId) {
+        $data = $database->fetchReportTitle($reportId);
+        $str->__construct($data);
+    }),
+    'summary' => Str::createLazy(function($str) use ($reportId) {
+        $data = $database->fetchReportSummary($reportId);
+        $str->__construct($data);
+    }),
+    'content' => Str::createLazy(function($str) use ($reportId) {
+        // Этот потенциально большой контент загружается только если он действительно отображается
+        $data = $database->fetchReportContent($reportId);
+        $str->__construct($data);
+    })
+];
+
+// Инициализируются только заголовок и аннотация - контент остается ленивым
+echo $reportFields['title']->toUpperCase();
+echo $reportFields['summary']->truncate(100);
+
+// Если это условие ложно, контент никогда не загружается из базы данных
+if ($showFullReport) {
+    echo $reportFields['content'];
+}
 ```
 
 #### Базовые свойства
