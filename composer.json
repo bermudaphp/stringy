@@ -1,13 +1,29 @@
 {
     "name": "bermudaphp/stringy",
+    "description": "A comprehensive PHP string manipulation library with full Unicode support",
     "license": "MIT",
+    "keywords": ["string", "unicode", "manipulation", "multibyte", "utf8", "immutable"],
     "autoload": {
         "psr-4": {
             "Bermuda\\Stdlib\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Bermuda\\Stdlib\\Tests\\": "tests/"
+        }
+    },
     "require": {
-        "php": "^8.0|^8.1",
-        "neitanod/forceutf8": "^2.0"
-    }
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
 }
