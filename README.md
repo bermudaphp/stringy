@@ -76,14 +76,14 @@ $lazy = \Bermuda\Stdlib\Str::createLazy(static function (\Bermuda\Stdlib\Str $st
 echo $lazy->value; // Triggers initialization: "construct call"
 ```
 
-How It Works
+### How It Works
 Unlike traditional objects that are initialized immediately, lazy ghost objects:
 
-Create a minimal placeholder object initially
-Only execute your initializer function when a property or method is accessed
-Initialize the object just-in-time with the values you specify
+Create a minimal placeholder object initially.  
+Only execute your initializer function when a property or method is accessed.  
+Initialize the object just-in-time with the values you specify.
 
-When to Use
+### When to Use
 Lazy initialization is particularly valuable when:
 
 Resource-heavy initialization: Loading data from files, databases, or APIs.  
@@ -91,7 +91,7 @@ Conditional usage: When objects may not be used in all code paths.
 Performance optimization: Delaying expensive operations until absolutely necessary.  
 Memory management: Reducing memory usage by not initializing unused objects.
 
-Advanced Example
+### Advanced Example
 ```php
 // Creating multiple lazy string objects for a report
 $reportFields = [
