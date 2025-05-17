@@ -1,6 +1,6 @@
 <?php
 
-namespace Bermuda\Stringy;
+namespace Bermuda\Stdlib;
 
 /**
  * Helper class for manipulating class names and namespaces
