@@ -28,7 +28,7 @@ trait BaseString
     /**
      * Create a lazy string instance
      *
-     * @param callable $initializer Function that returns the string value
+     * @param callable(StringInterface $object): void $initializer Function that returns the string value
      * @return StringInterface Lazy-initialized string instance
      */
     public static function createLazy(callable $initializer): StringInterface
@@ -886,16 +886,17 @@ trait BaseString
     /**
      * ArrayAccess implementation - Get the value at the offset
      *
-     * @param mixed $offset The offset to retrieve
+     * @param numeric-string|int $offset The offset to retrieve
      * @return string|null The character at the offset or null if the offset doesn't exist
+     * @throws \OutOfBoundsException if offset is illegal
      */
     public function offsetGet(mixed $offset): ?string
     {
-        if (!is_int($offset) || !$this->has($offset)) {
-            return null;
+        if (!is_numeric($offset)) {
+            throw new \OutOfRangeException("Illegal offset: $offset");
         }
 
-        return $this->charAt($offset);
+        return $this->charAt((int) $offset);
     }
 
     /**
