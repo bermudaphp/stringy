@@ -1,6 +1,6 @@
 # bermudaphp\stringy
 
-[![PHP Version Require](https://img.shields.io/badge/php-%3E%3D8.2-brightgreen.svg)](https://php.net/)
+[![PHP Version Require](https://img.shields.io/badge/php-%3E%3D8.4-brightgreen.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bermudaphp/stringy/blob/master/LICENSE)
 [![GitHub Tests](https://img.shields.io/github/actions/workflow/status/bermudaphp/stringy/tests.yml?branch=master&label=tests)](https://github.com/bermudaphp/stringy/actions/workflows/tests.yml)
 
