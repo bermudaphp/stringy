@@ -62,6 +62,63 @@ $str = new Str('Hello World');
 // alternative
 $str = Stringy::of('Hello World');
 ```
+## Lazy Initialization with createLazy()
+
+The `createLazy()` static method allows you to create lazily initialized string objects that are only constructed when actually accessed. This can significantly improve performance by delaying expensive operations until they're truly needed.
+
+```php
+// Create a lazy-initialized string object
+$lazy = \Bermuda\Stdlib\Str::createLazy(static function (\Bermuda\Stdlib\Str $str) {
+    $str->__construct('construct call');
+});
+
+// No initialization occurs until the object is accessed
+echo $lazy->value; // Triggers initialization: "construct call"
+```
+
+How It Works
+Unlike traditional objects that are initialized immediately, lazy ghost objects:
+
+Create a minimal placeholder object initially
+Only execute your initializer function when a property or method is accessed
+Initialize the object just-in-time with the values you specify
+
+When to Use
+Lazy initialization is particularly valuable when:
+
+Resource-heavy initialization: Loading data from files, databases, or APIs
+Conditional usage: When objects may not be used in all code paths
+Performance optimization: Delaying expensive operations until absolutely necessary
+Memory management: Reducing memory usage by not initializing unused objects
+
+Advanced Example
+```php
+// Creating multiple lazy string objects for a report
+$reportFields = [
+    'title' => Str::createLazy(function($str) use ($reportId) {
+        $data = $database->fetchReportTitle($reportId);
+        $str->__construct($data);
+    }),
+    'summary' => Str::createLazy(function($str) use ($reportId) {
+        $data = $database->fetchReportSummary($reportId);
+        $str->__construct($data);
+    }),
+    'content' => Str::createLazy(function($str) use ($reportId) {
+        // This potentially large content is only loaded if actually displayed
+        $data = $database->fetchReportContent($reportId);
+        $str->__construct($data);
+    })
+];
+
+// Only the title and summary are initialized - content remains lazy
+echo $reportFields['title']->toUpperCase();
+echo $reportFields['summary']->truncate(100);
+
+// If this condition is false, content is never loaded from the database
+if ($showFullReport) {
+    echo $reportFields['content'];
+}
+```
 
 #### Basic Properties
 
