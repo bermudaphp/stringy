@@ -56,6 +56,9 @@ $str = Str::from('Hello World');
 // Создать с указанием кодировки
 $russianStr = Str::from('Привет мир', 'UTF-8');
 
+// альтернатива
+$str = Stringy::of('Hello World');
+
 // Создать через конструктор
 $str = new Str('Hello World');
 ```
@@ -494,6 +497,9 @@ $russianStr = StrMutable::create('Привет мир', 'UTF-8');
 
 // Создать через конструктор
 $str = new StrMutable('Hello World');
+
+// альтернатива
+$str = Stringy::mutable('Hello World');
 
 // Установить значение строки напрямую
 $str = StrMutable::create('Hello');
