@@ -273,11 +273,11 @@ trait BaseString
     /**
      * Get an iterator for the string
      *
-     * @return Traversable Iterator for the string characters
+     * @return StringIterator Iterator for the string characters
      */
-    public function getIterator(): Traversable
+    public function getIterator(): StringIterator
     {
-        return new ArrayIterator($this->toArray());
+        return new StringIterator($this->value);
     }
 
     /**

@@ -321,14 +321,7 @@ final class StrMutable implements StringInterface
      */
     public function trim(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/^[' . $characters . ']+|[' . $characters . ']+$/u', '', $this->value);
-            $this->value = $result ?? $this->value;
-        } else {
-            $this->value = trim($this->value, $characters);
-        }
-
+        $this->value = Stringy::trim($this->value, $characters, $this->encoding);
         return $this;
     }
 
@@ -340,14 +333,7 @@ final class StrMutable implements StringInterface
      */
     public function trimStart(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/^[' . $characters . ']+/u', '', $this->value);
-            $this->value = $result ?? $this->value;
-        } else {
-            $this->value = ltrim($this->value, $characters);
-        }
-
+        $this->value = Stringy::trimStart($this->value, $characters, $this->encoding);
         return $this;
     }
 
@@ -359,14 +345,7 @@ final class StrMutable implements StringInterface
      */
     public function trimEnd(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/[' . $characters . ']+$/u', '', $this->value);
-            $this->value = $result ?? $this->value;
-        } else {
-            $this->value = rtrim($this->value, $characters);
-        }
-
+        $this->value = Stringy::trimEnd($this->value, $characters, $this->encoding);
         return $this;
     }
 
@@ -580,18 +559,8 @@ final class StrMutable implements StringInterface
      */
     public function delimit(string $delimiter): self
     {
-        $old = mb_regex_encoding();
-
-        try {
-            mb_regex_encoding($this->encoding);
-
-            $this->value = mb_ereg_replace('\B([A-Z])', '-\1', $this->trim()->toString());
-            $this->value = mb_ereg_replace('[-_\s]+', $delimiter, mb_strtolower($this->value, $this->encoding));
-
-            return $this;
-        } finally {
-            mb_regex_encoding($old);
-        }
+        $this->value = Stringy::delimit($this->value, $delimiter, $this->encoding);
+        return $this;
     }
 
     /**
@@ -946,5 +915,89 @@ final class StrMutable implements StringInterface
     {
         $this->value = Unicode::toAscii($this->value, $language, $strict);
         return $this;
+    }
+
+    /**
+     * ArrayAccess implementation - Set the character at the specified offset
+     *
+     * @param numeric-string|int $offset The offset to assign the value to
+     * @param string $value The character to set
+     * @return void
+     * @throws \OutOfRangeException If offset is not an integer or is out of bounds
+     * @throws \InvalidArgumentException If value is not a string or is longer than 1 character
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        // Check if offset is valid
+        if (!is_numeric($offset)) {
+            throw new \OutOfRangeException("Illegal offset: $offset");
+        }
+
+        $offset = (int) $offset;
+
+        // Check if position exists
+        if (!$this->has($offset)) {
+            throw new \OutOfRangeException("Invalid position: $offset");
+        }
+
+        // Check if value is a string
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException("Value must be a string, " . gettype($value) . " given");
+        }
+
+        // Check if value is a single character
+        if (mb_strlen($value, $this->encoding) !== 1) {
+            throw new \InvalidArgumentException("Value must be a single character");
+        }
+
+        // Handle negative offset
+        if ($offset < 0) {
+            $offset = $this->length() + $offset;
+        }
+
+        // Replace the character at the specified position
+        if ($this->isMultibyte) {
+            $before = mb_substr($this->value, 0, $offset, $this->encoding);
+            $after = mb_substr($this->value, $offset + 1, null, $this->encoding);
+            $this->value = $before . $value . $after;
+        } else {
+            $this->value = substr_replace($this->value, $value, $offset, 1);
+        }
+    }
+
+    /**
+     * ArrayAccess implementation - Unset (remove) the character at the specified offset
+     *
+     * @param numeric-string|int $offset The offset to unset
+     * @return void
+     * @throws \OutOfRangeException If offset is not an integer or is out of bounds
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        // Check if offset is valid
+        if (!is_numeric($offset)) {
+            throw new \OutOfRangeException("Illegal offset: $offset");
+        }
+
+        $offset = (int) $offset;
+
+        // Check if position exists
+        if (!$this->has($offset)) {
+            throw new \OutOfRangeException("Invalid position: $offset");
+        }
+
+        // Handle negative offset
+        if ($offset < 0) {
+            $offset = $this->length() + $offset;
+        }
+
+        // Remove the character at the specified position
+        if ($this->isMultibyte) {
+            $before = mb_substr($this->value, 0, $offset, $this->encoding);
+            $after = mb_substr($this->value, $offset + 1, null, $this->encoding);
+            $this->value = $before . $after;
+        } else {
+            $this->value = substr_replace($this->value, '', $offset, 1);
+        }
     }
 }

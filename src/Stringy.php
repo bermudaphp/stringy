@@ -1746,4 +1746,89 @@ final class Stringy
 
         return $chars1 === $chars2;
     }
+
+    /**
+     * Convert a string with the specified delimiter
+     *
+     * @param string $string The input string
+     * @param string $delimiter Delimiter to use
+     * @param string $encoding Character encoding
+     * @return string String converted with the specified delimiter
+     */
+    public static function delimit(string $string, string $delimiter, string $encoding = 'UTF-8'): string
+    {
+        // Сначала удаляем пробелы по краям строки
+        $string = self::trim($string, " \t\n\r\0\x0B", $encoding);
+
+        // Шаг 1: Вставляем разделитель перед заглавными буквами, не находящимися в начале слова
+        $pattern = '/\B([A-Z])/u';
+        $replacement = '-$1';
+        $string = self::replace($string, $pattern, $replacement, -1, $count, $encoding);
+
+        // Шаг 2: Переводим строку в нижний регистр
+        $string = mb_strtolower($string, $encoding);
+
+        // Шаг 3: Заменяем последовательности дефисов, подчеркиваний и пробелов на указанный разделитель
+        $pattern = '/[-_\s]+/u';
+        $string = self::replace($string, $pattern, $delimiter, -1, $count, $encoding);
+
+        return $string;
+    }
+
+    /**
+     * Remove whitespace characters from the beginning and end of the string
+     *
+     * @param string $string The input string
+     * @param string $characters Characters to remove
+     * @param string $encoding Character encoding
+     * @return string Trimmed string
+     */
+    public static function trim(string $string, string $characters = " \t\n\r\0\x0B", string $encoding = 'UTF-8'): string
+    {
+        if (self::isMultibyte($string)) {
+            $characters = preg_quote($characters, '/');
+            $result = preg_replace('/^[' . $characters . ']+|[' . $characters . ']+$/u', '', $string);
+            return $result ?? $string;
+        } else {
+            return trim($string, $characters);
+        }
+    }
+
+    /**
+     * Remove whitespace characters from the beginning of the string
+     *
+     * @param string $string The input string
+     * @param string $characters Characters to remove
+     * @param string $encoding Character encoding
+     * @return string String with whitespace removed from the beginning
+     */
+    public static function trimStart(string $string, string $characters = " \t\n\r\0\x0B", string $encoding = 'UTF-8'): string
+    {
+        if (self::isMultibyte($string)) {
+            $characters = preg_quote($characters, '/');
+            $result = preg_replace('/^[' . $characters . ']+/u', '', $string);
+            return $result ?? $string;
+        } else {
+            return ltrim($string, $characters);
+        }
+    }
+
+    /**
+     * Remove whitespace characters from the end of the string
+     *
+     * @param string $string The input string
+     * @param string $characters Characters to remove
+     * @param string $encoding Character encoding
+     * @return string String with whitespace removed from the end
+     */
+    public static function trimEnd(string $string, string $characters = " \t\n\r\0\x0B", string $encoding = 'UTF-8'): string
+    {
+        if (self::isMultibyte($string)) {
+            $characters = preg_quote($characters, '/');
+            $result = preg_replace('/[' . $characters . ']+$/u', '', $string);
+            return $result ?? $string;
+        } else {
+            return rtrim($string, $characters);
+        }
+    }
 }

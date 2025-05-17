@@ -264,13 +264,7 @@ final class Str implements StringInterface
      */
     public function trim(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/^[' . $characters . ']+|[' . $characters . ']+$/u', '', $this->value);
-            return new self($result ?? $this->value, $this->encoding);
-        }
-
-        return new self(trim($this->value, $characters), $this->encoding);
+        return new self(Stringy::trim($this->value, $characters, $this->encoding), $this->encoding);
     }
 
     /**
@@ -281,13 +275,7 @@ final class Str implements StringInterface
      */
     public function trimStart(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/^[' . $characters . ']+/u', '', $this->value);
-            return new self($result ?? $this->value, $this->encoding);
-        }
-
-        return new self(ltrim($this->value, $characters), $this->encoding);
+        return new self(Stringy::trimStart($this->value, $characters, $this->encoding), $this->encoding);
     }
 
     /**
@@ -298,13 +286,7 @@ final class Str implements StringInterface
      */
     public function trimEnd(string $characters = " \t\n\r\0\x0B"): self
     {
-        if ($this->isMultibyte) {
-            $characters = preg_quote($characters, '/');
-            $result = preg_replace('/[' . $characters . ']+$/u', '', $this->value);
-            return new self($result ?? $this->value, $this->encoding);
-        }
-
-        return new self(rtrim($this->value, $characters), $this->encoding);
+        return new self(Stringy::trimEnd($this->value, $characters, $this->encoding), $this->encoding);
     }
 
     /**
@@ -500,18 +482,7 @@ final class Str implements StringInterface
      */
     public function delimit(string $delimiter): self
     {
-        $old = mb_regex_encoding();
-
-        try {
-            mb_regex_encoding($this->encoding);
-
-            $string = mb_ereg_replace('\B([A-Z])', '-\1', $this->trim()->toString());
-            $string = mb_ereg_replace('[-_\s]+', $delimiter, mb_strtolower($string, $this->encoding));
-
-            return new self($string, $this->encoding);
-        } finally {
-            mb_regex_encoding($old);
-        }
+        return new self(Stringy::delimit($this->value, $delimiter, $this->encoding), $this->encoding);
     }
 
     /**
