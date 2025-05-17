@@ -58,6 +58,9 @@ $russianStr = Str::from('Привет мир', 'UTF-8');
 
 // Create through constructor
 $str = new Str('Hello World');
+
+// alternative
+$str = Stringy::of('Hello World');
 ```
 
 #### Basic Properties
@@ -494,6 +497,9 @@ $russianStr = StrMutable::create('Привет мир', 'UTF-8');
 
 // Create through constructor
 $str = new StrMutable('Hello World');
+
+// alternative
+$str = Stringy::mutable('Hello World');
 
 // Set string value directly
 $str = StrMutable::create('Hello');
