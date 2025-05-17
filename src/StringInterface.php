@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bermuda\Stringy;
+namespace Bermuda\Stdlib;
 
 use Bermuda\Stdlib\Arrayable;
 use DateTimeInterface;
