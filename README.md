@@ -86,10 +86,10 @@ Initialize the object just-in-time with the values you specify
 When to Use
 Lazy initialization is particularly valuable when:
 
-Resource-heavy initialization: Loading data from files, databases, or APIs
-Conditional usage: When objects may not be used in all code paths
-Performance optimization: Delaying expensive operations until absolutely necessary
-Memory management: Reducing memory usage by not initializing unused objects
+Resource-heavy initialization: Loading data from files, databases, or APIs.  
+Conditional usage: When objects may not be used in all code paths.  
+Performance optimization: Delaying expensive operations until absolutely necessary.  
+Memory management: Reducing memory usage by not initializing unused objects.
 
 Advanced Example
 ```php
