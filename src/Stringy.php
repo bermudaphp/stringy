@@ -20,10 +20,10 @@ final class Stringy
      * Create an immutable string
      *
      * @param string|Stringable $string The initial string value
-     * @param string $encoding The character encoding to use
+     * @param ?string $encoding The character encoding to use
      * @return Str New immutable string instance
      */
-    public static function of(string|Stringable $string, string $encoding = 'UTF-8'): Str
+    public static function of(string|Stringable $string, ?string $encoding = null): Str
     {
         return new Str($string, $encoding);
     }
@@ -32,10 +32,10 @@ final class Stringy
      * Create a mutable string
      *
      * @param string|Stringable $string The initial string value
-     * @param string $encoding The character encoding to use
+     * @param ?string $encoding The character encoding to use
      * @return StrMutable New mutable string instance
      */
-    public static function mutable(string|Stringable $string, string $encoding = 'UTF-8'): StrMutable
+    public static function mutable(string|Stringable $string, ?string $encoding = null): StrMutable
     {
         return new StrMutable($string, $encoding);
     }
