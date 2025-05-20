@@ -49,18 +49,10 @@ trait BaseString
      * @param string $encoding Character encoding to use
      * @throws InvalidArgumentException If the encoding is not supported
      */
-    public function __construct(string|Stringable $string, string $encoding = 'UTF-8')
+    public function __construct(string|Stringable $string, ?string $encoding = null)
     {
         $this->value = (string) $string;
         $this->encoding = $encoding;
-
-        // Check if encoding is supported
-        if (!in_array($this->encoding, mb_list_encodings(), true)) {
-            throw new InvalidArgumentException(
-                sprintf('Encoding "%s" is not supported', $this->encoding)
-            );
-        }
-
         // Determine if the string is multibyte
         $this->isMultibyte = Stringy::isMultibyte($this->value);
     }
