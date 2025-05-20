@@ -22,10 +22,10 @@ final class Str implements StringInterface
      * Create a string from a string value
      *
      * @param string|Stringable $string Initial string value
-     * @param string $encoding Character encoding to use
+     * @param ?string $encoding Character encoding to use
      * @return self New string instance
      */
-    public static function from(string|Stringable $string, string $encoding = 'UTF-8'): self
+    public static function from(string|Stringable $string, ?string $encoding = null): self
     {
         return new self($string, $encoding);
     }
